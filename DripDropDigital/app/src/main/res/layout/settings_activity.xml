@@ -1,0 +1,129 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/settings_scroll_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0C1920"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+    <!-- IP address input -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="IP Address"
+        android:textColor="@android:color/white"
+        android:textSize="18sp" />
+    <EditText
+        android:id="@+id/ip_address_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/edit_text_background"
+        android:inputType="text"
+        android:hint="192.168.255.255"
+        android:paddingStart="5dp"
+        android:textColor="@android:color/white" />
+
+    <!-- Client ID input -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Client ID"
+        android:textColor="@android:color/white"
+        android:textSize="18sp" />
+    <EditText
+            android:id="@+id/client_id_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/generate_button"
+            android:background="@drawable/edit_text_background"
+            android:inputType="text"
+            android:hint="Woooooooo"
+            android:paddingStart="5dp"
+            android:textColor="@android:color/white" />
+
+    <!-- Username input -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Username"
+        android:textColor="@android:color/white"
+        android:textSize="18sp" />
+    <EditText
+        android:id="@+id/username_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/edit_text_background"
+        android:inputType="text"
+        android:hint="nome"
+        android:paddingStart="5dp"
+        android:textColor="@android:color/white" />
+
+    <!-- Password input -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Password"
+        android:textColor="@android:color/white"
+        android:textSize="18sp" />
+    <EditText
+        android:id="@+id/password_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/edit_text_background"
+        android:inputType="textPassword"
+        android:hint="123456"
+        android:paddingStart="5dp"
+        android:textColor="@android:color/white" />
+
+    <!-- Last Will topic input -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Last Will Topic"
+        android:textColor="@android:color/white"
+        android:textSize="18sp" />
+    <EditText
+        android:id="@+id/last_will_topic_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/edit_text_background"
+        android:inputType="text"
+        android:hint="LED"
+        android:paddingStart="5dp"
+        android:textColor="@android:color/white" />
+
+    <!-- Last Will message input -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Last Will Message"
+        android:textColor="@android:color/white"
+        android:textSize="18sp" />
+    <EditText
+        android:id="@+id/last_will_message_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/edit_text_background"
+        android:inputType="text"
+        android:hint="I'm dead"
+        android:paddingStart="5dp"
+        android:textColor="@android:color/white" />
+
+        <!-- Save button on the bottom -->
+        <Button
+            android:id="@+id/save_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Save"
+            android:textColor="@android:color/white" />
+
+    </LinearLayout>
+
+
+</ScrollView>
