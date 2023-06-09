@@ -17,7 +17,6 @@ LED = Pin("LED", Pin.OUT)
 #Apaga previamente o LED
 LED.off()
 
-
 #WIFI
 #Criar instância da interface de rede
 wlan = network.WLAN(network.STA_IF)
