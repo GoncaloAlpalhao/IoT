@@ -145,7 +145,10 @@ class MainActivity : AppCompatActivity() {
 
         val connectBtn: Button = findViewById(R.id.connect)
         connectBtn.setOnClickListener{
-            connect(this)
+            //Lets try our new connection class
+            var mqtttest = MqttConnection(this)
+            mqtttest.connect(this)
+            //connect(this)
         }
 
         val publishBtn: Button = findViewById(R.id.publish)

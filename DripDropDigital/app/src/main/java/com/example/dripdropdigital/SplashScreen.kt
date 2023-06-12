@@ -23,16 +23,15 @@ class SplashScreen: AppCompatActivity() {
         val imageView = findViewById<ImageView>(R.id.imageView2)
 
         Handler().postDelayed({
-            // Create a ScaleAnimation to zoom in on the image
-            val animation = ScaleAnimation(1f, 50f, 1f, 50f, Animation.RELATIVE_TO_SELF, 0.495f, Animation.RELATIVE_TO_SELF, 0.47f)
-            animation.duration = 3000
+            // Create animation to zoom out on the image
+            val animation = ScaleAnimation(1f, 10f, 1f, 10f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 4f)
+            animation.duration = 4000
             animation.fillAfter = true
             animation.setAnimationListener(object : Animation.AnimationListener {
                 override fun onAnimationStart(animation: Animation?) {
-                    val intent = Intent(this@SplashScreen, MainActivity::class.java)
+                    val intent = Intent(this@SplashScreen, Home::class.java)
                     startActivity(intent)
                     finish()
-                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
                 }
 
                 override fun onAnimationEnd(animation: Animation?) {
@@ -45,7 +44,7 @@ class SplashScreen: AppCompatActivity() {
             // Apply the animation to the ImageView
             imageView.startAnimation(animation)
 
-        }, 1250)
+        }, 1000)
 
     }
 }
