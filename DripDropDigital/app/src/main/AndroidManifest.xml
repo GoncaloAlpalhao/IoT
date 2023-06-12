@@ -17,6 +17,9 @@
         android:theme="@style/Theme.DripDropDigital"
         tools:targetApi="31">
         <activity
+            android:name=".MainDashboard"
+            android:exported="false" />
+        <activity
             android:name=".Home"
             android:exported="false" />
         <activity
