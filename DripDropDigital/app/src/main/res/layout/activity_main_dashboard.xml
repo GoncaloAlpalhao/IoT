@@ -46,7 +46,7 @@
                     android:textColor="@color/white"
                     android:layout_width="wrap_content"
                     android:layout_marginStart="15dp"
-                    android:text="Chuva Intermitente"
+                    android:text="Whole bunch of turbulence"
                     android:textSize="28sp"
                     android:layout_height="wrap_content"/>
                 <TextView
@@ -55,7 +55,7 @@
                     android:textColor="@color/white"
                     android:layout_width="wrap_content"
                     android:layout_marginStart="15dp"
-                    android:text="21°C"
+                    android:text="Everybody calm down"
                     android:textSize="28sp"
                     android:layout_height="wrap_content"/>
             </LinearLayout>

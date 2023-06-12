@@ -3,8 +3,6 @@ import time
 import machine
 from machine import ADC, Pin, I2C
 from umqtt.simple import MQTTClient
-import random
-import utime
 import bme280       #importing BME280 library
 
 #LED

@@ -19,10 +19,11 @@ class MainDashboard : AppCompatActivity() {
     lateinit var cityTemp: TextView
     var cityTemperature = "0°C"
 
-    @SuppressLint("MissingInflatedId")
+    @SuppressLint("MissingInflatedId", "SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_dashboard)
+        supportActionBar?.hide()
         var mqttTest = MqttConnection(this)
         temp = findViewById(R.id.temperature)
         hSol = findViewById(R.id.humiditySoil)
@@ -42,8 +43,8 @@ class MainDashboard : AppCompatActivity() {
         var city = "Tomar"
         getCurrentWeather(apiKey, city) { weatherDescription ->
             runOnUiThread {
-                cityT.text = weatherDescription + " in $city"
-                cityTemp.text = cityTemperature
+                cityT.text = "$weatherDescription in $city"
+                cityTemp.text = "$cityTemperature°C"
             }
         }
     }
