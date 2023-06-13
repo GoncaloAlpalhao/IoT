@@ -9,4 +9,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="dark_teal">#0C1920</color>
     <color name="light_organge">#FFB347</color>
+    <color name="semiTransparent">#80000000</color>
 </resources>
