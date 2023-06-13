@@ -51,7 +51,7 @@ class MqttConnection(context: Context) : AppCompatActivity() {
     }
 
     // Create a function to connect to the mqtt broker
-    fun connect(context: Context, onConnect: () -> Unit = {}) {
+    fun connect(context: Context, onConnect: (String) -> Unit = {}) {
         val serverURI = "tcp://$ipAddress"
         mqttClient = MqttAndroidClient(context, serverURI, clientId)
         mqttClient.setCallback(object : MqttCallback {
@@ -69,7 +69,7 @@ class MqttConnection(context: Context) : AppCompatActivity() {
                 }else if (topic == "temperaturaCpu"){
                     tempCpu = "$message°C"
                 }
-                onConnect()
+                onConnect("Message")
             }
             override fun deliveryComplete(token: IMqttDeliveryToken) {
                 Toast.makeText(context, "Message delivered", Toast.LENGTH_SHORT).show()
@@ -89,11 +89,12 @@ class MqttConnection(context: Context) : AppCompatActivity() {
                     mqttClient.subscribe("humidadeAr",1)
                     mqttClient.subscribe("humidadeSolo",1)
                     mqttClient.subscribe("temperaturaCpu",1)
+                    onConnect("Success")
 
                 }
                 override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable) {
-                    Toast.makeText(context, "Connection failed", Toast.LENGTH_SHORT).show()
                     isConected = false
+                    onConnect("Failed")
                 }
             })
         } catch (e: Exception) {

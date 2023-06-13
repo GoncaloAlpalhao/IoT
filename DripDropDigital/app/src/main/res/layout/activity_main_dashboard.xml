@@ -5,9 +5,26 @@
     android:layout_width="match_parent"
     android:background="#0C1920"
     android:orientation="vertical"
-    android:weightSum="5"
     android:layout_height="match_parent"
     tools:context=".Home">
+
+    <FrameLayout
+        android:id="@+id/loadingLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:visibility="gone">
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/lottie"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/linklottie" />
+
+    </FrameLayout>
 
     <GridLayout
         android:layout_weight="2"
@@ -47,7 +64,7 @@
                     android:layout_width="wrap_content"
                     android:layout_marginStart="15dp"
                     android:text="Whole bunch of turbulence"
-                    android:textSize="28sp"
+                    android:textSize="20sp"
                     android:layout_height="wrap_content"/>
                 <TextView
                     android:id="@+id/cityTemp"
@@ -56,7 +73,7 @@
                     android:layout_width="wrap_content"
                     android:layout_marginStart="15dp"
                     android:text="Everybody calm down"
-                    android:textSize="28sp"
+                    android:textSize="20sp"
                     android:layout_height="wrap_content"/>
             </LinearLayout>
 

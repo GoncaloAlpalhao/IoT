@@ -3,8 +3,12 @@ package com.example.dripdropdigital
 import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import com.airbnb.lottie.LottieAnimationView
 import okhttp3.*
 import org.json.JSONObject
 import java.io.IOException
@@ -24,6 +28,11 @@ class MainDashboard : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_dashboard)
         supportActionBar?.hide()
+
+        val loadingLayout = findViewById<FrameLayout>(R.id.loadingLayout)
+        var loadingGif = findViewById<LottieAnimationView>(R.id.lottie)
+        loadingLayout.visibility = View.VISIBLE
+
         var mqttTest = MqttConnection(this)
         temp = findViewById(R.id.temperature)
         hSol = findViewById(R.id.humiditySoil)
@@ -31,12 +40,35 @@ class MainDashboard : AppCompatActivity() {
         tempCpu = findViewById(R.id.temperatureCPU)
         cityT = findViewById(R.id.city)
         cityTemp = findViewById(R.id.cityTemp)
-        mqttTest.connect(this){
+        mqttTest.connect(this){ callBack ->
             runOnUiThread {
-                temp.text = mqttTest.newMessage("temperatura")
-                hSol.text = mqttTest.newMessage("humidadeSolo")
-                hAir.text = mqttTest.newMessage("humidadeAr")
-                tempCpu.text = mqttTest.newMessage("temperaturaCpu")
+                if (callBack == "Message") {
+                    temp.text = mqttTest.newMessage("temperatura")
+                    hSol.text = mqttTest.newMessage("humidadeSolo")
+                    hAir.text = mqttTest.newMessage("humidadeAr")
+                    tempCpu.text = mqttTest.newMessage("temperaturaCpu")
+                }else if (callBack == "Failed"){
+                    //Set layout width to match parent
+                    loadingGif.setAnimation(R.raw.failed)
+                    loadingGif.playAnimation()
+                    loadingGif.loop(false)
+                    Toast.makeText(this, "Failed to connect to MQTT Broker", Toast.LENGTH_SHORT).show()
+                    Thread {
+                        Thread.sleep(2750)
+                        finish()
+                    }.start()
+                }else if(callBack == "Success"){
+                    loadingGif.setAnimation(R.raw.success)
+                    loadingGif.playAnimation()
+                    loadingGif.loop(false)
+                    Toast.makeText(this, "Connected to MQTT Broker", Toast.LENGTH_SHORT).show()
+                    Thread {
+                        Thread.sleep(2750)
+                        runOnUiThread {
+                            loadingLayout.visibility = View.GONE
+                        }
+                    }.start()
+                }
             }
         }
         val apiKey = "9ec6b8792977153a9db9dc83d2134ec5"
@@ -72,4 +104,5 @@ class MainDashboard : AppCompatActivity() {
         })
 
     }
+
 }
