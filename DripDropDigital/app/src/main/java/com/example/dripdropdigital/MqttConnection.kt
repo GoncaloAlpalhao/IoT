@@ -63,9 +63,9 @@ class MqttConnection(context: Context) : AppCompatActivity() {
                 if (topic == "temperatura"){
                     temp = "$message°C"
                 }else if (topic == "humidadeAr"){
-                    hAr = message.toString()
+                    hAr = "$message%"
                 }else if (topic == "humidadeSolo"){
-                    hSol = message.toString()
+                    hSol = "$message%"
                 }else if (topic == "temperaturaCpu"){
                     tempCpu = "$message°C"
                 }
