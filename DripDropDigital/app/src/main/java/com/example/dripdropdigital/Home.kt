@@ -11,8 +11,6 @@ class Home : AppCompatActivity() {
     lateinit var connect: CardView
     lateinit var settings: CardView
     lateinit var goToRasp: CardView
-    lateinit var uri: Uri
-    lateinit var launchBrowser: Intent
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,10 +31,8 @@ class Home : AppCompatActivity() {
         }
 
         goToRasp.setOnClickListener {
-            uri = Uri.parse("http://192.168.4.1")
-            launchBrowser = Intent(Intent.ACTION_VIEW, uri)
-            startActivity(launchBrowser)
-
+            val intent = Intent(this, TutorialActivity::class.java)
+            startActivity(intent)
         }
 
     }
