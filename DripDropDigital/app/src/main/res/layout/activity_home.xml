@@ -145,7 +145,7 @@
                 android:layout_height="wrap_content">
                 <ImageView
                     android:layout_weight="2"
-                    android:src="@drawable/straight"
+                    android:src="@drawable/idea"
                     android:layout_width="50dp"
                     android:layout_margin="15dp"
                     android:layout_height="50dp"/>
@@ -153,7 +153,7 @@
                     android:textColor="@color/black"
                     android:layout_width="wrap_content"
                     android:layout_marginStart="15dp"
-                    android:text="About?"
+                    android:text="About App"
                     android:textSize="18sp"
                     android:layout_height="wrap_content"/>
             </LinearLayout>

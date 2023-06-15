@@ -11,6 +11,7 @@ class Home : AppCompatActivity() {
     lateinit var connect: CardView
     lateinit var settings: CardView
     lateinit var goToRasp: CardView
+    lateinit var about: CardView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,6 +20,7 @@ class Home : AppCompatActivity() {
         connect = findViewById(R.id.connect)
         settings = findViewById(R.id.settings)
         goToRasp = findViewById(R.id.goToRasp)
+        about = findViewById(R.id.about)
 
         connect.setOnClickListener {
             val intent = Intent(this, MainDashboard::class.java)
@@ -32,6 +34,11 @@ class Home : AppCompatActivity() {
 
         goToRasp.setOnClickListener {
             val intent = Intent(this, TutorialActivity::class.java)
+            startActivity(intent)
+        }
+
+        about.setOnClickListener {
+            val intent = Intent(this, AboutActivity::class.java)
             startActivity(intent)
         }
 
