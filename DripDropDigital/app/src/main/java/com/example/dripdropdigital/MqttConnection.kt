@@ -88,7 +88,7 @@ class MqttConnection(context: Context) : AppCompatActivity() {
         try {
             mqttClient.connect(options, null, object : IMqttActionListener {
                 override fun onSuccess(asyncActionToken: IMqttToken) {
-                    Toast.makeText(context, "Connected", Toast.LENGTH_SHORT).show()
+                    //Toast.makeText(context, "Connected", Toast.LENGTH_SHORT).show()
                     isConected = true
                     mqttClient.subscribe("temperatura",1)
                     mqttClient.subscribe("humidadeAr",1)

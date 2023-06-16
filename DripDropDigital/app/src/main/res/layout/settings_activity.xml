@@ -12,14 +12,15 @@
         android:orientation="vertical">
 
         <!-- Save button on the top -->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/save_button"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_marginVertical="16dp"
             android:layout_marginHorizontal="16dp"
             android:text="Save"
-            android:background="@drawable/rounded_button"
+            app:backgroundTint="#3083DB"
+            app:cornerRadius="25dp"
             android:textColor="@android:color/white" />
 
         <GridLayout
@@ -40,6 +41,7 @@
                 android:layout_margin="10dp"
                 android:elevation="4dp"
                 app:cardCornerRadius="20dp"
+                android:backgroundTint="@color/white"
                 android:background="@color/white">
 
                 <LinearLayout
@@ -81,6 +83,7 @@
                 android:layout_margin="10dp"
                 android:elevation="4dp"
                 app:cardCornerRadius="20dp"
+                android:backgroundTint="@color/white"
                 android:background="@color/white">
 
                 <LinearLayout
@@ -122,6 +125,7 @@
                 android:layout_margin="10dp"
                 android:elevation="4dp"
                 app:cardCornerRadius="20dp"
+                android:backgroundTint="@color/white"
                 android:background="@color/white">
 
                 <LinearLayout
@@ -162,6 +166,7 @@
                 android:layout_margin="10dp"
                 android:elevation="4dp"
                 app:cardCornerRadius="20dp"
+                android:backgroundTint="@color/white"
                 android:background="@color/white">
 
                 <LinearLayout
@@ -202,6 +207,7 @@
                 android:layout_margin="10dp"
                 android:elevation="4dp"
                 app:cardCornerRadius="20dp"
+                android:backgroundTint="@color/white"
                 android:background="@color/white">
 
                 <LinearLayout
@@ -241,6 +247,7 @@
                 android:layout_margin="10dp"
                 android:elevation="4dp"
                 app:cardCornerRadius="20dp"
+                android:backgroundTint="@color/white"
                 android:background="@color/white">
 
                 <LinearLayout
@@ -279,6 +286,7 @@
                 android:layout_margin="10dp"
                 android:elevation="4dp"
                 app:cardCornerRadius="20dp"
+                android:backgroundTint="@color/white"
                 android:background="@color/white">
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -289,7 +297,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Maximo de Humidade Permitade"
+                        android:text="Máximo de Humidade Permitida"
                         android:textStyle="bold"
                         android:layout_marginStart="15dp"
                         android:textColor="@android:color/black"
@@ -316,6 +324,7 @@
                 android:layout_margin="10dp"
                 android:elevation="4dp"
                 app:cardCornerRadius="20dp"
+                android:backgroundTint="@color/white"
                 android:background="@color/white">
                 <LinearLayout
                     android:layout_width="match_parent"
