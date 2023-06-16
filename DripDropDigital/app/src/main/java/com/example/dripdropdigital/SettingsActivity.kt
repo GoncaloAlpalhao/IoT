@@ -48,8 +48,7 @@ class SettingsActivity : AppCompatActivity() {
         applyButton.setOnClickListener {
             saveSettings()
         }
-
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.hide()
     }
 
     // ...
