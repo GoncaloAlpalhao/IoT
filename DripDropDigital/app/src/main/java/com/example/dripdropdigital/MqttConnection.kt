@@ -28,10 +28,11 @@ class MqttConnection(context: Context) : AppCompatActivity() {
     private val lastWillTopic: String = sharedPreferences.getString("last_will_topic", "") ?: "ltt"
     private val lastWillPayload: String = sharedPreferences.getString("last_will_payload", "") ?: "ltt"
 
-    var temp: String = "0°C"
-    var hAr: String = "0%"
-    var hSol: String = "0%"
-    var tempCpu: String = "0°C"
+    var temp: String = "0"
+    var hAr: String = "0"
+    var hSol: String = "0"
+    var tempCpu: String = "0"
+    var waterState: String = "Unknown"
     var isConected: Boolean = false
 
     // Create a variable to hold the mqtt client
@@ -46,6 +47,8 @@ class MqttConnection(context: Context) : AppCompatActivity() {
             return hSol
         }else if (topic == "temperaturaCpu"){
             return tempCpu
+        }else if (topic == "sistemaRega"){
+            return waterState
         }
         return "Error"
     }
@@ -61,18 +64,20 @@ class MqttConnection(context: Context) : AppCompatActivity() {
             override fun messageArrived(topic: String, message: MqttMessage) {
                 //Toast.makeText(context, "Message received", Toast.LENGTH_SHORT).show()
                 if (topic == "temperatura"){
-                    temp = "$message°C"
+                    temp = message.toString()
                 }else if (topic == "humidadeAr"){
-                    hAr = "$message%"
+                    hAr = message.toString()
                 }else if (topic == "humidadeSolo"){
-                    hSol = "$message%"
+                    hSol = message.toString()
                 }else if (topic == "temperaturaCpu"){
-                    tempCpu = "$message°C"
+                    tempCpu = message.toString()
+                }else if (topic == "sistemaRega"){
+                    waterState = message.toString()
                 }
                 onConnect("Message")
             }
             override fun deliveryComplete(token: IMqttDeliveryToken) {
-                Toast.makeText(context, "Message delivered", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(context, "Message delivered", Toast.LENGTH_SHORT).show()
             }
         })
         val options = MqttConnectOptions()
@@ -89,6 +94,7 @@ class MqttConnection(context: Context) : AppCompatActivity() {
                     mqttClient.subscribe("humidadeAr",1)
                     mqttClient.subscribe("humidadeSolo",1)
                     mqttClient.subscribe("temperaturaCpu",1)
+                    mqttClient.subscribe("sistemaRega",1)
                     onConnect("Success")
 
                 }
