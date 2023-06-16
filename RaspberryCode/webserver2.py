@@ -3,8 +3,8 @@ import socket
 import ure
 import time
 
-ap_ssid = "BokuNoPico"
-ap_password = "boanoite"
+ap_ssid = "PicoDrip"
+ap_password = "dripdropdigital"
 ap_authmode = 3  # WPA2
 
 NETWORK_PROFILES = 'wifi.dat'

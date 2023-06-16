@@ -1,3 +1,4 @@
+import wifimgr
 import machine
 from machine import Pin, I2C, ADC
 import time
@@ -23,23 +24,20 @@ max_moisture=49300
 dht20 = DHT20(0x38, i2c0)
 
 #WIFI
-#Criar instância da interface de rede
-wlan = network.WLAN(network.STA_IF)
-#Ativar a interface de rede
-wlan.active(True)
-#Conectar à rede TPSI
-wlan.connect("Galaxy S20 FE 5G","EpaEnfim123")
+#Inicializar o módulo WIFI
+wlan = wifimgr.get_connection()
 #Esperar até que esteja conectado
-while(wlan.isconnected() == False):
-    time.sleep(0.2)
+if wlan is None:
+    print("Could not initialize the network connection.")
+    while True:
+        pass  #No trespassing :D
 #Imprimir o IP
-print("Conectado à rede TPSI\nIP: ", wlan.ifconfig()[0])                    
+print(wlan.ifconfig()[0])                  
 
 #MQTT
-msgAux = "873234289"              #Valor inicial da variavel (random)
-mqtt_server = "192.168.103.212"     #IP do broker MQTT
-client_id = "testmqtt"            #ID do cliente MQTT
-topic_pub = "temperatura"         #Topico onde vai ser publicada a mensagem
+mqtt_server = "192.168.72.212"    #IP do broker MQTT
+client_id = "testmqtt3428709"     #ID do cliente MQTT
+topic_pub = "temperatura"         #Topico onde vai ser publicada a mensagem Last Will
 topic_sub = "LED"                 #Topico onde o raspberry vai subscrever
 
 #Função de subscrição
@@ -53,7 +51,6 @@ def sub_cb(topic, msg):
     elif msg == "off":
         LED.off()
         dp += 1
-
     #Se a mensagem não for "on" ou "off", o LED pisca 5 vezes para indicar que a mensagem não foi reconhecida
     else:
         blink(5,0.1)
@@ -66,7 +63,7 @@ def mqtt_connect():
     client.connect(clean_session=False)
     print("Connected to %s MQTT broker" % (mqtt_server))
     #Piscar o LED para indicar ao cliente que está conectado
-    blink(3,0.333)
+    blink(2,0.25)
     client.subscribe(topic_sub)
     LED.on()
     return client
@@ -101,15 +98,19 @@ def messagePublisher():
     #Formula para converter o valor lido para Celsius
     tempCelsius = 27 - (((temp.read_u16()*(3.3/65535)) - 0.706) / 0.001721)
     time.sleep(0.2)
+    #Publicar a humidade do solo
     moisturePub = str(moisture)[:5]
     client.publish("humidadeSolo", moisturePub, retain=True)
     time.sleep(0.2)
+    #Publicar a temperatura
     tempPub = str(measurements['t'])[:5]
     client.publish("temperatura", tempPub, retain=True)
     time.sleep(0.2)
+    #Publicar a humidade do ar
     humidadeArPub = str(measurements['rh'])[:5]
     client.publish("humidadeAr", humidadeArPub, retain=True)
     time.sleep(0.2)
+    #Publicar a temperatura do cpu
     tempCpuPub = str(tempCelsius)[:5]
     client.publish("temperaturaCpu", tempCpuPub, retain=True)
     time.sleep(0.2)
