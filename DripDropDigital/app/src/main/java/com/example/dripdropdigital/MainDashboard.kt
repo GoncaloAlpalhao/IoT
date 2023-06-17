@@ -1,13 +1,19 @@
 package com.example.dripdropdigital
 
 import android.annotation.SuppressLint
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.transition.AutoTransition
+import android.transition.TransitionManager
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.GridLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.cardview.widget.CardView
 import com.airbnb.lottie.LottieAnimationView
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.Viewport
@@ -17,6 +23,7 @@ import com.jjoe64.graphview.series.LineGraphSeries
 import okhttp3.*
 import org.json.JSONObject
 import java.io.IOException
+import java.util.Random
 
 class MainDashboard : AppCompatActivity() {
 
@@ -25,55 +32,88 @@ class MainDashboard : AppCompatActivity() {
     lateinit var hAir: TextView
     lateinit var tempCpu: TextView
     lateinit var cityT: TextView
+    lateinit var ledState: TextView
     lateinit var weatherIcon: ImageView
     var weatherIconSet = ""
+    var isRain = false
+    var cityTemp = ""
+    lateinit var rainState: String
+    lateinit var mainLayout: LinearLayout
 
-    private lateinit var series: LineGraphSeries<DataPoint>
-    private lateinit var graph: GraphView
+    private lateinit var series1: LineGraphSeries<DataPoint>
+    private lateinit var series2: LineGraphSeries<DataPoint>
+    private lateinit var series3: LineGraphSeries<DataPoint>
+    private lateinit var series4: LineGraphSeries<DataPoint>
+    private lateinit var graph: GraphView // The graph is the graph itself
     private lateinit var graph2: GraphView
     private lateinit var graph3: GraphView
     private lateinit var graph4: GraphView
-    private lateinit var viewport: Viewport
-    val x = mutableListOf(0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0)
-    val y = mutableListOf(0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0)
+    private lateinit var viewport: Viewport // The viewport is used to set the graph's view
+    val x = mutableListOf<Double>() // The x axis of the graph
 
     @SuppressLint("MissingInflatedId", "SetTextI18n", "DiscouragedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_dashboard)
         supportActionBar?.hide()
-
         val loadingLayout = findViewById<FrameLayout>(R.id.loadingLayout)
         var loadingGif = findViewById<LottieAnimationView>(R.id.lottie)
         loadingLayout.visibility = View.VISIBLE
-
         var mqttTest = MqttConnection(this)
         temp = findViewById(R.id.temperature)
         hSol = findViewById(R.id.humiditySoil)
         hAir = findViewById(R.id.humidityAir)
         tempCpu = findViewById(R.id.temperatureCPU)
         cityT = findViewById(R.id.city)
+        ledState = findViewById(R.id.ledState)
         weatherIcon = findViewById(R.id.weatherIcon)
+
+        mainLayout = findViewById(R.id.mainLayout)
+
+        // Initialize the graphs
         graph = findViewById(R.id.graph1)
         graph2 = findViewById(R.id.graph2)
         graph3 = findViewById(R.id.graph3)
         graph4 = findViewById(R.id.graph4)
-        series = LineGraphSeries()
-        graph.addSeries(series)
-        graph2.addSeries(series)
-        graph3.addSeries(series)
-        graph4.addSeries(series)
-        makeGraph()
-        makeGraph2()
-        makeGraph3()
-        makeGraph4()
+        // Initialize the series for each graph
+        series1 = LineGraphSeries()
+        series2 = LineGraphSeries()
+        series3 = LineGraphSeries()
+        series4 = LineGraphSeries()
+        // Add the series to the respective graphs
+        graph.addSeries(series1)
+        graph2.addSeries(series2)
+        graph3.addSeries(series3)
+        graph4.addSeries(series4)
+
         mqttTest.connect(this){ callBack ->
             runOnUiThread {
                 if (callBack == "Message") {
-                    temp.text = mqttTest.newMessage("temperatura")
-                    hSol.text = mqttTest.newMessage("humidadeSolo")
-                    hAir.text = mqttTest.newMessage("humidadeAr")
-                    tempCpu.text = mqttTest.newMessage("temperaturaCpu")
+                    var temperaturaAmbient = mqttTest.newMessage("temperatura")
+                    makeGraph1(temperaturaAmbient)
+                    temp.text = temperaturaAmbient + "°C"
+
+                    var humidadeAr = mqttTest.newMessage("humidadeAr")
+                    makeGraph2(humidadeAr)
+                    hAir.text = humidadeAr + "%"
+
+                    var humidadeSolo = mqttTest.newMessage("humidadeSolo")
+                    makeGraph3(humidadeSolo)
+                    hSol.text = humidadeSolo + "%"
+
+                    var temperaturaCPU = mqttTest.newMessage("temperaturaCpu")
+                    makeGraph4(temperaturaCPU)
+                    tempCpu.text = temperaturaCPU + "°C"
+
+                    var sistemaRega = mqttTest.newMessage("sistemaRega")
+                    if(sistemaRega == "1"){
+                        ledState.text = "Ligado"
+                    }else if(sistemaRega == "0"){
+                        ledState.text = "Desligado"
+                    }else{
+                        ledState.text = "Erro"
+                    }
+
                 }else if (callBack == "Failed"){
                     //Set layout width to match parent
                     loadingGif.setAnimation(R.raw.failed)
@@ -81,21 +121,53 @@ class MainDashboard : AppCompatActivity() {
                     loadingGif.loop(false)
                     Toast.makeText(this, "Failed to connect to MQTT Broker", Toast.LENGTH_SHORT).show()
                     Thread {
-                        Thread.sleep(2750)
+                        Thread.sleep(1500)
                         finish()
                     }.start()
                 }else if(callBack == "Success"){
                     loadingGif.setAnimation(R.raw.success)
                     loadingGif.playAnimation()
                     loadingGif.loop(false)
-                    Toast.makeText(this, "Connected to MQTT Broker", Toast.LENGTH_SHORT).show()
+                    if(isRain){
+                        mqttTest.publish("LED", "rain", retained = true)
+                    }else{
+                        mqttTest.publish("LED", "norain", retained = true)
+                    }
+
+                    //Toast.makeText(this, "Connected to MQTT Broker", Toast.LENGTH_SHORT).show()
                     Thread {
-                        Thread.sleep(2750)
+                        Thread.sleep(1500)
                         runOnUiThread {
+                            TransitionManager.beginDelayedTransition(mainLayout, AutoTransition())
                             loadingLayout.visibility = View.GONE
-                            series.resetData(arrayOf(DataPoint(0.0, 0.0)))
-                            makeGraph()
+                            series1.resetData(arrayOf(DataPoint(0.0, 0.0)))
+                            series2.resetData(arrayOf(DataPoint(0.0, 0.0)))
+                            series3.resetData(arrayOf(DataPoint(0.0, 0.0)))
+                            series4.resetData(arrayOf(DataPoint(0.0, 0.0)))
                         }
+                        /*TEST CODE FOR THE GRAPHS
+                        val random = Random()
+                        while (true) {
+                            val randomValue = random.nextInt(61) + 20 // Generate random value between 20 and 80
+                            val randomValue2 = random.nextInt(61) + 20 // Generate random value between 20 and 80
+                            val randomValue3 = random.nextInt(61) + 20 // Generate random value between 20 and 80
+                            val randomValue4 = random.nextInt(61) + 20 // Generate random value between 20 and 80
+                            val stringValue = randomValue.toString()
+                            val stringValue2 = randomValue2.toString()
+                            val stringValue3 = randomValue3.toString()
+                            val stringValue4 = randomValue4.toString()
+                            runOnUiThread {
+                                temp.text = stringValue + "°C"
+                                hSol.text = stringValue2 + "%"
+                                hAir.text = stringValue3 + "%"
+                                tempCpu.text = stringValue4 + "°C"
+                                makeGraph1(stringValue) // Update the graph with the random value
+                                makeGraph2(stringValue2)
+                                makeGraph3(stringValue3)
+                                makeGraph4(stringValue4)
+                            }
+                            Thread.sleep(1000) // Sleep for 1 second
+                        }*/
                     }.start()
                 }
             }
@@ -104,7 +176,13 @@ class MainDashboard : AppCompatActivity() {
         var city = "Tomar"
         getCurrentWeather(apiKey, city) { weatherDescription ->
             runOnUiThread {
-                cityT.text = weatherDescription
+                cityT.text = "$city\t\t$cityTemp\n$weatherDescription"
+                //If the weather all decapitalized contains "Rain" set isRaining = rain
+                if (isRain){
+                    rainState = "rain"
+                }else{
+                    rainState = "norain"
+                }
                 weatherIcon.setImageResource(resources.getIdentifier(weatherIconSet, "drawable", packageName))
 
             }
@@ -128,7 +206,9 @@ class MainDashboard : AppCompatActivity() {
                 val weatherArray = jsonObject.getJSONArray("weather")
                 val weatherObject = weatherArray.getJSONObject(0)
                 var weatherDescription = weatherObject.getString("description")
+                isRain = weatherObject.getString("id").startsWith("5")
                 weatherDescription = capitalize(weatherDescription)
+                cityTemp = jsonObject.getJSONObject("main").getString("temp").substring(0,2) + "°C"
                 weatherIconSet = "d" + weatherObject.getString("icon").substring(0,2) + "d"
                 callback(weatherDescription)
             }
@@ -142,194 +222,88 @@ class MainDashboard : AppCompatActivity() {
             .map { it.capitalize() }.joinToString(" ")
     }
 
-    fun makeGraph() {
-        // Give x and y axises their range
+    fun makeGraph1(temp: String) {
+        val yValue = temp.toDouble()
+        val newX = x.size.toDouble()
         viewport = graph.viewport
-        graph.gridLabelRenderer.setHumanRounding(false)
-        viewport.isYAxisBoundsManual = true
+        series1.appendData(DataPoint(newX, yValue), true, 100)
+
+        x.add(System.currentTimeMillis().toDouble())
+
+        // Set the fixed interval for the Y-axis
+        val minY = 0.0 // Minimum value for Y-axis
+        val maxY = 100.0 // Maximum value for Y-axis
+        viewport.setMinY(minY)
+        viewport.setMaxY(maxY)
+
         viewport.setMinX(0.0)
-        viewport.setMaxX(100.0)
-        viewport.setMinY(0.0)
-        viewport.setMaxY(100.0)
-        viewport.isScrollable = true
+        viewport.setMaxX(newX + 10)
+        viewport.isXAxisBoundsManual = true
 
-        val staticLabelsFormatter   = StaticLabelsFormatter(graph)
-        staticLabelsFormatter.setHorizontalLabels(
-            arrayOf(
-                "0",
-                "10",
-                "20",
-                "30",
-                "40",
-                "50",
-                "60",
-                "70",
-                "80",
-                "90",
-                "100"
-            )
-        )
-        staticLabelsFormatter.setVerticalLabels(
-            arrayOf(
-                "0",
-                "10",
-                "20",
-                "30",
-                "40",
-                "50",
-                "60",
-                "70",
-                "80",
-                "90",
-                "100"
-            )
-        )
-
-
-        for (i in 0..x.size - 1) {
-            series.appendData(
-                DataPoint(
-                    x[i],
-                    y.shuffled()[i]
-                ),
-                true,
-                100
-            )
-        }
-
-
+        graph.onDataChanged(false, false)
     }
 
-    fun makeGraph2(){
-        // Give x and y axises their range
+    fun makeGraph2(humid: String) {
+        val yValue = humid.toDouble()
+        val newX = x.size.toDouble()
         viewport = graph2.viewport
-        graph2.gridLabelRenderer.setHumanRounding(false)
-        viewport.isYAxisBoundsManual = true
-        viewport.setMinX(0.0)
-        viewport.setMaxX(100.0)
-        viewport.setMinY(0.0)
-        viewport.setMaxY(100.0)
-        viewport.isScrollable = true
+        series2.appendData(DataPoint(newX, yValue), true, 100)
 
-        val staticLabelsFormatter   = StaticLabelsFormatter(graph2)
-        staticLabelsFormatter.setHorizontalLabels(
-            arrayOf(
-                "0",
-                "10",
-                "20",
-                "30",
-                "40",
-                "50",
-                "60",
-                "70",
-                "80",
-                "90",
-                "100"
-            )
-        )
-        staticLabelsFormatter.setVerticalLabels(
-            arrayOf(
-                "0",
-                "10",
-                "20",
-                "30",
-                "40",
-                "50",
-                "60",
-                "70",
-                "80",
-                "90",
-                "100"
-            )
-        )
+        x.add(System.currentTimeMillis().toDouble())
+
+        // Set the fixed interval for the Y-axis
+        val minY = 0.0 // Minimum value for Y-axis
+        val maxY = 100.0 // Maximum value for Y-axis
+        viewport.setMinY(minY)
+        viewport.setMaxY(maxY)
+
+        viewport.setMinX(0.0)
+        viewport.setMaxX(newX + 10)
+        viewport.isXAxisBoundsManual = true
+
+        graph.onDataChanged(false, false)
     }
 
-    fun makeGraph3(){
-        // Give x and y axises their range
+    fun makeGraph3(humid: String) {
+        val yValue = humid.toDouble()
+        val newX = x.size.toDouble()
         viewport = graph3.viewport
-        graph3.gridLabelRenderer.setHumanRounding(false)
-        viewport.isYAxisBoundsManual = true
-        viewport.setMinX(0.0)
-        viewport.setMaxX(100.0)
-        viewport.setMinY(0.0)
-        viewport.setMaxY(100.0)
-        viewport.isScrollable = true
+        series3.appendData(DataPoint(newX, yValue), true, 100)
 
-        val staticLabelsFormatter   = StaticLabelsFormatter(graph3)
-        staticLabelsFormatter.setHorizontalLabels(
-            arrayOf(
-                "0",
-                "10",
-                "20",
-                "30",
-                "40",
-                "50",
-                "60",
-                "70",
-                "80",
-                "90",
-                "100"
-            )
-        )
-        staticLabelsFormatter.setVerticalLabels(
-            arrayOf(
-                "0",
-                "10",
-                "20",
-                "30",
-                "40",
-                "50",
-                "60",
-                "70",
-                "80",
-                "90",
-                "100"
-            )
-        )
+        x.add(System.currentTimeMillis().toDouble())
+
+        // Set the fixed interval for the Y-axis
+        val minY = 0.0 // Minimum value for Y-axis
+        val maxY = 100.0 // Maximum value for Y-axis
+        viewport.setMinY(minY)
+        viewport.setMaxY(maxY)
+
+        viewport.setMinX(0.0)
+        viewport.setMaxX(newX + 10)
+        viewport.isXAxisBoundsManual = true
+
+        graph.onDataChanged(false, false)
     }
 
-    fun makeGraph4(){
-        // Give x and y axises their range
+    fun makeGraph4(temp: String) {
+        val yValue = temp.toDouble()
+        val newX = x.size.toDouble()
         viewport = graph4.viewport
-        graph4.gridLabelRenderer.setHumanRounding(false)
-        viewport.isYAxisBoundsManual = true
-        viewport.setMinX(0.0)
-        viewport.setMaxX(100.0)
-        viewport.setMinY(0.0)
-        viewport.setMaxY(100.0)
-        viewport.isScrollable = true
+        series4.appendData(DataPoint(newX, yValue), true, 100)
 
-        val staticLabelsFormatter   = StaticLabelsFormatter(graph4)
-        staticLabelsFormatter.setHorizontalLabels(
-            arrayOf(
-                "0",
-                "10",
-                "20",
-                "30",
-                "40",
-                "50",
-                "60",
-                "70",
-                "80",
-                "90",
-                "100"
-            )
-        )
-        staticLabelsFormatter.setVerticalLabels(
-            arrayOf(
-                "0",
-                "10",
-                "20",
-                "30",
-                "40",
-                "50",
-                "60",
-                "70",
-                "80",
-                "90",
-                "100"
-            )
-        )
+        x.add(System.currentTimeMillis().toDouble())
+
+        // Set the fixed interval for the Y-axis
+        val minY = 0.0 // Minimum value for Y-axis
+        val maxY = 100.0 // Maximum value for Y-axis
+        viewport.setMinY(minY)
+        viewport.setMaxY(maxY)
+
+        viewport.setMinX(0.0)
+        viewport.setMaxX(newX + 10)
+        viewport.isXAxisBoundsManual = true
+
+        graph.onDataChanged(false, false)
     }
 
 }

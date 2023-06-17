@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="#0C1920"
+    android:orientation="vertical"
+    android:weightSum="5"
+    android:layout_height="match_parent"
+    tools:context=".Home">
+
+    <GridLayout
+        android:layout_weight="5"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:columnCount="1"
+        android:padding="15dp"
+        android:rowCount="4">
+
+        <androidx.cardview.widget.CardView
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            app:cardCornerRadius="15dp"
+            android:layout_margin="10dp"
+            app:cardBackgroundColor="@color/white"
+            android:elevation="4dp"
+            android:layout_height="0dp"
+            android:layout_width="0dp">
+            <LinearLayout
+                android:orientation="horizontal"
+                android:weightSum="3"
+                android:layout_gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/lottie"
+                    android:layout_weight="0"
+                    android:layout_width="100dp"
+                    android:layout_margin="15dp"
+                    android:layout_height="100dp"
+                    android:scaleType="centerCrop"
+                    android:layout_gravity="center"
+                    app:lottie_autoPlay="true"
+                    app:lottie_loop="true"
+                    app:lottie_rawRes="@raw/connect" />
+                <TextView
+                    android:layout_weight="0"
+                    android:textColor="@color/black"
+                    android:layout_width="wrap_content"
+                    android:layout_marginEnd="15dp"
+                    android:text="1 - Connect your Raspberry Pi to a power source and wait about 10 seconds"
+                    android:gravity="center_vertical"
+                    android:textSize="15sp"
+                    android:layout_height="match_parent"/>
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            app:cardCornerRadius="15dp"
+            android:layout_margin="10dp"
+            app:cardBackgroundColor="@color/white"
+            android:elevation="4dp"
+            android:layout_height="0dp"
+            android:layout_width="0dp">
+            <LinearLayout
+                android:orientation="horizontal"
+                android:weightSum="3"
+                android:layout_gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/lottie2"
+                    android:layout_weight="0"
+                    android:layout_width="100dp"
+                    android:layout_margin="15dp"
+                    android:layout_height="100dp"
+                    android:scaleType="centerCrop"
+                    android:layout_gravity="center"
+                    app:lottie_autoPlay="true"
+                    app:lottie_loop="true"
+                    app:lottie_rawRes="@raw/wifiscanning" />
+                <TextView
+                    android:layout_weight="0"
+                    android:textColor="@color/black"
+                    android:layout_width="wrap_content"
+                    android:layout_marginEnd="15dp"
+                    android:text="2 - Go to your device's WiFi settings and connect to:\nSSID: PicoDrop\nPassword: dripdropdigital"
+                    android:gravity="center_vertical"
+                    android:textSize="15sp"
+                    android:layout_height="match_parent"/>
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            app:cardCornerRadius="15dp"
+            android:layout_margin="10dp"
+            app:cardBackgroundColor="@color/white"
+            android:elevation="4dp"
+            android:layout_height="0dp"
+            android:layout_width="0dp">
+            <LinearLayout
+                android:orientation="horizontal"
+                android:weightSum="3"
+                android:layout_gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/lottie3"
+                    android:layout_weight="0"
+                    android:layout_width="100dp"
+                    android:layout_margin="15dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center"
+                    android:scaleType="centerCrop"
+                    app:lottie_autoPlay="true"
+                    app:lottie_loop="true"
+                    app:lottie_rawRes="@raw/smarthome" />
+                <TextView
+                    android:layout_weight="0"
+                    android:textColor="@color/black"
+                    android:layout_width="wrap_content"
+                    android:layout_marginEnd="15dp"
+                    android:text="3 - After successfully connecting to the device, return to this app and press the button below to configure your device with your Home WiFi"
+                    android:gravity="center_vertical"
+                    android:textSize="15sp"
+                    android:layout_height="match_parent"/>
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView
+            android:id="@+id/connectButton"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="0.25"
+            app:cardCornerRadius="15dp"
+            android:layout_margin="10dp"
+            app:cardBackgroundColor="@color/white"
+            android:elevation="4dp"
+            android:layout_height="0dp"
+            android:layout_width="0dp">
+            <LinearLayout
+                android:orientation="horizontal"
+                android:weightSum="0"
+                android:layout_gravity="center"
+                android:background="@drawable/gradient"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <TextView
+                    android:layout_weight="1"
+                    android:textColor="@color/white"
+                    android:layout_width="wrap_content"
+                    android:text="Connect"
+                    android:gravity="center"
+                    android:textSize="28sp"
+                    android:layout_height="match_parent"/>
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </GridLayout>
+
+</LinearLayout>

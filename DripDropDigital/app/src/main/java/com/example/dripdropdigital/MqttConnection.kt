@@ -1,12 +1,20 @@
 package com.example.dripdropdigital
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
+import android.graphics.Color
+import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationCompat
+import androidx.core.graphics.toColorInt
 import com.jjoe64.graphview.series.DataPoint
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.IMqttActionListener
@@ -27,11 +35,15 @@ class MqttConnection(context: Context) : AppCompatActivity() {
     private val password: String = sharedPreferences.getString("password", "") ?: "123"
     private val lastWillTopic: String = sharedPreferences.getString("last_will_topic", "") ?: "ltt"
     private val lastWillPayload: String = sharedPreferences.getString("last_will_payload", "") ?: "ltt"
+    private val minHumidity: String = sharedPreferences.getString("min_humidity", "") ?: "20"
+    private var notifEnviada = false
+    private val notifHandler = Handler(Looper.getMainLooper())
 
-    var temp: String = "0°C"
-    var hAr: String = "0%"
-    var hSol: String = "0%"
-    var tempCpu: String = "0°C"
+    var temp: String = "0"
+    var hAr: String = "0"
+    var hSol: String = "0"
+    var tempCpu: String = "0"
+    var waterState: String = "Unknown"
     var isConected: Boolean = false
 
     // Create a variable to hold the mqtt client
@@ -46,6 +58,8 @@ class MqttConnection(context: Context) : AppCompatActivity() {
             return hSol
         }else if (topic == "temperaturaCpu"){
             return tempCpu
+        }else if (topic == "sistemaRega"){
+            return waterState
         }
         return "Error"
     }
@@ -61,18 +75,27 @@ class MqttConnection(context: Context) : AppCompatActivity() {
             override fun messageArrived(topic: String, message: MqttMessage) {
                 //Toast.makeText(context, "Message received", Toast.LENGTH_SHORT).show()
                 if (topic == "temperatura"){
-                    temp = "$message°C"
+                    temp = message.toString()
                 }else if (topic == "humidadeAr"){
-                    hAr = "$message%"
+                    hAr = message.toString()
                 }else if (topic == "humidadeSolo"){
-                    hSol = "$message%"
+                    hSol = message.toString().trim()
+                    if (message.toString().trim().toInt() < minHumidity.toInt() && !notifEnviada){
+                        enviarNotif(context)
+                        notifEnviada = true
+                        notifHandler.postDelayed({
+                            notifEnviada = false
+                        }, 15000)
+                    }
                 }else if (topic == "temperaturaCpu"){
-                    tempCpu = "$message°C"
+                    tempCpu = message.toString()
+                }else if (topic == "sistemaRega"){
+                    waterState = message.toString()
                 }
                 onConnect("Message")
             }
             override fun deliveryComplete(token: IMqttDeliveryToken) {
-                Toast.makeText(context, "Message delivered", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(context, "Message delivered", Toast.LENGTH_SHORT).show()
             }
         })
         val options = MqttConnectOptions()
@@ -83,12 +106,13 @@ class MqttConnection(context: Context) : AppCompatActivity() {
         try {
             mqttClient.connect(options, null, object : IMqttActionListener {
                 override fun onSuccess(asyncActionToken: IMqttToken) {
-                    Toast.makeText(context, "Connected", Toast.LENGTH_SHORT).show()
+                    //Toast.makeText(context, "Connected", Toast.LENGTH_SHORT).show()
                     isConected = true
                     mqttClient.subscribe("temperatura",1)
                     mqttClient.subscribe("humidadeAr",1)
                     mqttClient.subscribe("humidadeSolo",1)
                     mqttClient.subscribe("temperaturaCpu",1)
+                    mqttClient.subscribe("sistemaRega",1)
                     onConnect("Success")
 
                 }
@@ -166,6 +190,24 @@ class MqttConnection(context: Context) : AppCompatActivity() {
         } catch (e: MqttException) {
             e.printStackTrace()
         }
+    }
+
+    private fun enviarNotif(context: Context){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channelId = "Notificação Humidade"
+            val channelName = "Notificações Acerca da Humidade do Solo"
+            val notificationChannel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT)
+            val notificationManager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(notificationChannel)
+        }
+        val notificationBuilder = NotificationCompat.Builder(context, "Notificação Humidade")
+            .setSmallIcon(R.drawable.dripdropdigitalsmol)
+            .setContentTitle("Alerta da Humidade do Solo \uD83D\uDCA7")
+            .setContentText("A humidade do solo está abaixo do limite definido. Verifique o estado do sistema de rega.")
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+
+        val notificationManager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(1, notificationBuilder.build())
     }
 
 }

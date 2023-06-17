@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="#0C1920"
+    android:orientation="vertical"
+    android:weightSum="5"
+    android:layout_height="match_parent"
+    tools:context=".Home">
+
+    <GridLayout
+        android:layout_weight="5"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:columnCount="1"
+        android:padding="15dp"
+        android:rowCount="4">
+
+        <androidx.cardview.widget.CardView
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1.4"
+            app:cardCornerRadius="15dp"
+            android:layout_margin="10dp"
+            app:cardBackgroundColor="@color/white"
+            android:elevation="4dp"
+            android:layout_height="0dp"
+            android:layout_width="0dp">
+            <LinearLayout
+                android:orientation="horizontal"
+                android:weightSum="3"
+                android:layout_gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/lottie1"
+                    android:layout_weight="0"
+                    android:layout_width="75dp"
+                    android:layout_margin="15dp"
+                    android:layout_height="75dp"
+                    android:scaleType="centerCrop"
+                    android:layout_gravity="center"
+                    app:lottie_autoPlay="true"
+                    app:lottie_loop="true"
+                    app:lottie_rawRes="@raw/information" />
+                <TextView
+                    android:layout_weight="0"
+                    android:textColor="@color/black"
+                    android:layout_width="wrap_content"
+                    android:layout_margin="15dp"
+                    android:text="Esta aplicação IoT permite controlar e monitorizar um sistema de irrigação inteligente, que se adapta às condições climáticas e às necessidades das plantas. A aplicação foi desenvolvida por dois alunos de engenharia informática, no âmbito da unidade curricular Internet das Coisas."
+                    android:textSize="14sp"
+                    android:gravity="center"
+                    android:justificationMode="inter_word"
+                    android:layout_height="match_parent"/>
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            app:cardCornerRadius="15dp"
+            android:layout_margin="10dp"
+            app:cardBackgroundColor="@color/white"
+            android:elevation="4dp"
+            android:layout_height="0dp"
+            android:layout_width="0dp">
+            <LinearLayout
+                android:orientation="horizontal"
+                android:weightSum="3"
+                android:layout_gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/lottie2"
+                    android:layout_weight="0"
+                    android:layout_width="100dp"
+                    android:layout_margin="15dp"
+                    android:layout_height="100dp"
+                    android:scaleType="centerCrop"
+                    android:layout_gravity="center"
+                    app:lottie_autoPlay="true"
+                    app:lottie_loop="true"
+                    app:lottie_rawRes="@raw/devmarcelo" />
+                <TextView
+                    android:layout_weight="0"
+                    android:textColor="@color/black"
+                    android:layout_width="wrap_content"
+                    android:layout_marginEnd="15dp"
+                    android:text="Marcelo Matos\nN.º 23028\n21 anos"
+                    android:gravity="center_vertical"
+                    android:textSize="17sp"
+                    android:layout_height="match_parent"/>
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            app:cardCornerRadius="15dp"
+            android:layout_margin="10dp"
+            app:cardBackgroundColor="@color/white"
+            android:elevation="4dp"
+            android:layout_height="0dp"
+            android:layout_width="0dp">
+            <LinearLayout
+                android:orientation="horizontal"
+                android:weightSum="3"
+                android:layout_gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/lottie3"
+                    android:layout_weight="0"
+                    android:layout_width="100dp"
+                    android:layout_margin="15dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center"
+                    android:scaleType="centerCrop"
+                    app:lottie_autoPlay="true"
+                    app:lottie_loop="true"
+                    app:lottie_rawRes="@raw/devgoncalo" />
+                <TextView
+                    android:layout_weight="0"
+                    android:textColor="@color/black"
+                    android:layout_width="wrap_content"
+                    android:layout_marginEnd="15dp"
+                    android:text="Gonçalo Alpalhão\nN.º 23048\n20 anos"
+                    android:gravity="center_vertical"
+                    android:textSize="17sp"
+                    android:layout_height="match_parent"/>
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </GridLayout>
+
+</LinearLayout>

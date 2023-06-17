@@ -4,6 +4,8 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.ViewTreeObserver
+import android.widget.ImageView
 import androidx.cardview.widget.CardView
 
 class Home : AppCompatActivity() {
@@ -11,8 +13,7 @@ class Home : AppCompatActivity() {
     lateinit var connect: CardView
     lateinit var settings: CardView
     lateinit var goToRasp: CardView
-    lateinit var uri: Uri
-    lateinit var launchBrowser: Intent
+    lateinit var about: CardView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,6 +22,19 @@ class Home : AppCompatActivity() {
         connect = findViewById(R.id.connect)
         settings = findViewById(R.id.settings)
         goToRasp = findViewById(R.id.goToRasp)
+        about = findViewById(R.id.about)
+
+        val homeIcon: ImageView = findViewById(R.id.homeIcon)
+
+        supportPostponeEnterTransition()
+
+        homeIcon.viewTreeObserver.addOnPreDrawListener(object: ViewTreeObserver.OnPreDrawListener {
+            override fun onPreDraw(): Boolean {
+                homeIcon.viewTreeObserver.removeOnPreDrawListener(this)
+                supportStartPostponedEnterTransition()
+                return true
+            }
+        })
 
         connect.setOnClickListener {
             val intent = Intent(this, MainDashboard::class.java)
@@ -33,10 +47,13 @@ class Home : AppCompatActivity() {
         }
 
         goToRasp.setOnClickListener {
-            uri = Uri.parse("http://192.168.4.1")
-            launchBrowser = Intent(Intent.ACTION_VIEW, uri)
-            startActivity(launchBrowser)
+            val intent = Intent(this, TutorialActivity::class.java)
+            startActivity(intent)
+        }
 
+        about.setOnClickListener {
+            val intent = Intent(this, AboutActivity::class.java)
+            startActivity(intent)
         }
 
     }
