@@ -43,6 +43,10 @@ class SettingsActivity : AppCompatActivity() {
         val lastWillPayloadEditText = findViewById<EditText>(R.id.last_will_message_edit_text)
         lastWillPayloadEditText.setText(lastWillPayload)
 
+        val minHumidity = sharedPreferences.getString("min_humidity", "20")
+        val minHumidityEditText = findViewById<EditText>(R.id.min_humidity_edit_text)
+        minHumidityEditText.setText(minHumidity)
+
         // Set up the "Apply" button click listener to save the updated settings
         val applyButton = findViewById<Button>(R.id.save_button)
         applyButton.setOnClickListener {
@@ -73,6 +77,9 @@ class SettingsActivity : AppCompatActivity() {
 
         val lastWillPayloadEditText = findViewById<EditText>(R.id.last_will_message_edit_text)
         editor.putString("last_will_payload", lastWillPayloadEditText.text.toString())
+
+        val minHumidityEditText = findViewById<EditText>(R.id.min_humidity_edit_text)
+        editor.putString("min_humidity", minHumidityEditText.text.toString())
 
         editor.apply()
 

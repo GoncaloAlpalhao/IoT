@@ -5,9 +5,11 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.GridLayout
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.cardview.widget.CardView
 import com.airbnb.lottie.LottieAnimationView
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.Viewport
@@ -48,7 +50,6 @@ class MainDashboard : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_dashboard)
         supportActionBar?.hide()
-
         val loadingLayout = findViewById<FrameLayout>(R.id.loadingLayout)
         var loadingGif = findViewById<LottieAnimationView>(R.id.lottie)
         loadingLayout.visibility = View.VISIBLE
@@ -86,11 +87,11 @@ class MainDashboard : AppCompatActivity() {
 
                     var humidadeAr = mqttTest.newMessage("humidadeAr")
                     makeGraph2(humidadeAr)
-                    hSol.text = humidadeAr + "%"
+                    hAir.text = humidadeAr + "%"
 
                     var humidadeSolo = mqttTest.newMessage("humidadeSolo")
                     makeGraph3(humidadeSolo)
-                    hAir.text = humidadeSolo + "%"
+                    hSol.text = humidadeSolo + "%"
 
                     var temperaturaCPU = mqttTest.newMessage("temperaturaCpu")
                     makeGraph4(temperaturaCPU)
@@ -134,7 +135,7 @@ class MainDashboard : AppCompatActivity() {
                             series3.resetData(arrayOf(DataPoint(0.0, 0.0)))
                             series4.resetData(arrayOf(DataPoint(0.0, 0.0)))
                         }
-                        /*TEST CODE FOR THE GRAPHS*/
+                        /*TEST CODE FOR THE GRAPHS
                         val random = Random()
                         while (true) {
                             val randomValue = random.nextInt(61) + 20 // Generate random value between 20 and 80
@@ -156,7 +157,7 @@ class MainDashboard : AppCompatActivity() {
                                 makeGraph4(stringValue4)
                             }
                             Thread.sleep(1000) // Sleep for 1 second
-                        }
+                        }*/
                     }.start()
                 }
             }
