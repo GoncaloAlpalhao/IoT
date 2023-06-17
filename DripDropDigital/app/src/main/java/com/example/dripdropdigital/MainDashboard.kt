@@ -1,12 +1,16 @@
 package com.example.dripdropdigital
 
 import android.annotation.SuppressLint
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.transition.AutoTransition
+import android.transition.TransitionManager
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.GridLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
@@ -32,7 +36,9 @@ class MainDashboard : AppCompatActivity() {
     lateinit var weatherIcon: ImageView
     var weatherIconSet = ""
     var isRain = false
+    var cityTemp = ""
     lateinit var rainState: String
+    lateinit var mainLayout: LinearLayout
 
     private lateinit var series1: LineGraphSeries<DataPoint>
     private lateinit var series2: LineGraphSeries<DataPoint>
@@ -61,6 +67,8 @@ class MainDashboard : AppCompatActivity() {
         cityT = findViewById(R.id.city)
         ledState = findViewById(R.id.ledState)
         weatherIcon = findViewById(R.id.weatherIcon)
+
+        mainLayout = findViewById(R.id.mainLayout)
 
         // Initialize the graphs
         graph = findViewById(R.id.graph1)
@@ -113,7 +121,7 @@ class MainDashboard : AppCompatActivity() {
                     loadingGif.loop(false)
                     Toast.makeText(this, "Failed to connect to MQTT Broker", Toast.LENGTH_SHORT).show()
                     Thread {
-                        Thread.sleep(2750)
+                        Thread.sleep(1500)
                         finish()
                     }.start()
                 }else if(callBack == "Success"){
@@ -125,10 +133,12 @@ class MainDashboard : AppCompatActivity() {
                     }else{
                         mqttTest.publish("LED", "norain", retained = true)
                     }
-                    Toast.makeText(this, "Connected to MQTT Broker", Toast.LENGTH_SHORT).show()
+
+                    //Toast.makeText(this, "Connected to MQTT Broker", Toast.LENGTH_SHORT).show()
                     Thread {
-                        Thread.sleep(2750)
+                        Thread.sleep(1500)
                         runOnUiThread {
+                            TransitionManager.beginDelayedTransition(mainLayout, AutoTransition())
                             loadingLayout.visibility = View.GONE
                             series1.resetData(arrayOf(DataPoint(0.0, 0.0)))
                             series2.resetData(arrayOf(DataPoint(0.0, 0.0)))
@@ -166,7 +176,7 @@ class MainDashboard : AppCompatActivity() {
         var city = "Tomar"
         getCurrentWeather(apiKey, city) { weatherDescription ->
             runOnUiThread {
-                cityT.text = weatherDescription
+                cityT.text = "$city\t\t$cityTemp\n$weatherDescription"
                 //If the weather all decapitalized contains "Rain" set isRaining = rain
                 if (isRain){
                     rainState = "rain"
@@ -198,6 +208,7 @@ class MainDashboard : AppCompatActivity() {
                 var weatherDescription = weatherObject.getString("description")
                 isRain = weatherObject.getString("id").startsWith("5")
                 weatherDescription = capitalize(weatherDescription)
+                cityTemp = jsonObject.getJSONObject("main").getString("temp").substring(0,2) + "°C"
                 weatherIconSet = "d" + weatherObject.getString("icon").substring(0,2) + "d"
                 callback(weatherDescription)
             }

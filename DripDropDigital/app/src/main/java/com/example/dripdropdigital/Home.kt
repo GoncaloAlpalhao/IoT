@@ -4,6 +4,8 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.ViewTreeObserver
+import android.widget.ImageView
 import androidx.cardview.widget.CardView
 
 class Home : AppCompatActivity() {
@@ -21,6 +23,18 @@ class Home : AppCompatActivity() {
         settings = findViewById(R.id.settings)
         goToRasp = findViewById(R.id.goToRasp)
         about = findViewById(R.id.about)
+
+        val homeIcon: ImageView = findViewById(R.id.homeIcon)
+
+        supportPostponeEnterTransition()
+
+        homeIcon.viewTreeObserver.addOnPreDrawListener(object: ViewTreeObserver.OnPreDrawListener {
+            override fun onPreDraw(): Boolean {
+                homeIcon.viewTreeObserver.removeOnPreDrawListener(this)
+                supportStartPostponedEnterTransition()
+                return true
+            }
+        })
 
         connect.setOnClickListener {
             val intent = Intent(this, MainDashboard::class.java)
