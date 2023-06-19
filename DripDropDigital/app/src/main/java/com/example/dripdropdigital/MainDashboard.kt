@@ -1,6 +1,7 @@
 package com.example.dripdropdigital
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -11,6 +12,7 @@ import android.widget.FrameLayout
 import android.widget.GridLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
@@ -36,9 +38,14 @@ class MainDashboard : AppCompatActivity() {
     lateinit var weatherIcon: ImageView
     var weatherIconSet = ""
     var isRain = false
+    var flagSwitch = true
+    var flagSwitch2 = true
     var cityTemp = ""
     lateinit var rainState: String
     lateinit var mainLayout: LinearLayout
+    lateinit var manState: TextView
+    lateinit var switchRega: Switch
+    lateinit var switchModo: Switch
 
     private lateinit var series1: LineGraphSeries<DataPoint>
     private lateinit var series2: LineGraphSeries<DataPoint>
@@ -69,6 +76,29 @@ class MainDashboard : AppCompatActivity() {
         weatherIcon = findViewById(R.id.weatherIcon)
 
         mainLayout = findViewById(R.id.mainLayout)
+        manState = findViewById(R.id.manState)
+        switchRega = findViewById(R.id.regaSwitch)
+        switchModo = findViewById(R.id.manSwitch)
+
+        switchRega.setOnCheckedChangeListener { _, isChecked ->
+            if (flagSwitch){
+                if (isChecked) {
+                    mqttTest.publish("LED", "on")
+                } else {
+                    mqttTest.publish("LED", "off")
+                }
+            }
+        }
+
+        switchModo.setOnCheckedChangeListener { _, isChecked ->
+            if (flagSwitch2){
+                if (isChecked) {
+                    mqttTest.publish("LED", "manual", retained = true)
+                } else {
+                    mqttTest.publish("LED", "automatic", retained = true)
+                }
+            }
+        }
 
         // Initialize the graphs
         graph = findViewById(R.id.graph1)
@@ -99,6 +129,13 @@ class MainDashboard : AppCompatActivity() {
 
                     var humidadeSolo = mqttTest.newMessage("humidadeSolo")
                     makeGraph3(humidadeSolo)
+                    if (humidadeSolo.toFloat() < 20) {
+                        hSol.setTextColor(Color.parseColor("#800020"))
+                    } else if (humidadeSolo.toFloat() > 70) {
+                        hSol.setTextColor(Color.parseColor("#00C6AF"))
+                    } else {
+                        hSol.setTextColor(Color.BLACK)
+                    }
                     hSol.text = humidadeSolo + "%"
 
                     var temperaturaCPU = mqttTest.newMessage("temperaturaCpu")
@@ -106,13 +143,42 @@ class MainDashboard : AppCompatActivity() {
                     tempCpu.text = temperaturaCPU + "°C"
 
                     var sistemaRega = mqttTest.newMessage("sistemaRega")
-                    if(sistemaRega == "1"){
+                    if(sistemaRega == "on"){
+                        flagSwitch = false
                         ledState.text = "Ligado"
-                    }else if(sistemaRega == "0"){
+                        switchRega.isChecked = true
+                        ledState.setTextColor(Color.parseColor("#00C6AF"))
+                    }else if(sistemaRega == "off"){
+                        flagSwitch = false
                         ledState.text = "Desligado"
+                        switchRega.isChecked = false
+                        ledState.setTextColor(Color.parseColor("#800020"))
                     }else{
-                        ledState.text = "Erro"
+                        ledState.text = sistemaRega
+                        switchRega.isChecked = false
                     }
+                    Thread {
+                        Thread.sleep(500)
+                        flagSwitch = true
+                    }.start()
+
+                    var modoRega = mqttTest.newMessage("manMode")
+                    if(modoRega == "manual"){
+                        flagSwitch2 = false
+                        manState.text = "Manual"
+                        switchModo.isChecked = true
+                    }else if(modoRega == "automatico"){
+                        flagSwitch2 = false
+                        manState.text = "Automático"
+                        switchModo.isChecked = false
+                    }else{
+                        manState.text = modoRega
+                        switchModo.isChecked = false
+                    }
+                    Thread {
+                        Thread.sleep(500)
+                        flagSwitch2 = true
+                    }.start()
 
                 }else if (callBack == "Failed"){
                     //Set layout width to match parent
@@ -273,7 +339,7 @@ class MainDashboard : AppCompatActivity() {
         x.add(System.currentTimeMillis().toDouble())
 
         // Set the fixed interval for the Y-axis
-        val minY = 0.0 // Minimum value for Y-axis
+        val minY = -10.0 // Minimum value for Y-axis
         val maxY = 100.0 // Maximum value for Y-axis
         viewport.setMinY(minY)
         viewport.setMaxY(maxY)

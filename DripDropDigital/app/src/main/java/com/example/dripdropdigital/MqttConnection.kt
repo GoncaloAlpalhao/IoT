@@ -33,11 +33,9 @@ class MqttConnection(context: Context) : AppCompatActivity() {
     private val clientId: String = sharedPreferences.getString("client_id", "") ?: "123"
     private val username: String = sharedPreferences.getString("username", "") ?: "test"
     private val password: String = sharedPreferences.getString("password", "") ?: "123"
-    private val lastWillTopic: String = sharedPreferences.getString("last_will_topic", "") ?: "ltt"
-    private val lastWillPayload: String = sharedPreferences.getString("last_will_payload", "") ?: "ltt"
+    private var lastWillTopic: String = sharedPreferences.getString("last_will_topic", "") ?: "ltt"
+    private var lastWillPayload: String = sharedPreferences.getString("last_will_payload", "") ?: "ltt"
     private val minHumidity: String = sharedPreferences.getString("min_humidity", "") ?: "20"
-    private var notifEnviada = false
-    private val notifHandler = Handler(Looper.getMainLooper())
 
     var temp: String = "0"
     var hAr: String = "0"
@@ -45,6 +43,8 @@ class MqttConnection(context: Context) : AppCompatActivity() {
     var tempCpu: String = "0"
     var waterState: String = "Unknown"
     var isConected: Boolean = false
+    var manMode = "Unknown"
+    var notifSent = false
 
     // Create a variable to hold the mqtt client
     lateinit var mqttClient: MqttAndroidClient
@@ -60,6 +60,8 @@ class MqttConnection(context: Context) : AppCompatActivity() {
             return tempCpu
         }else if (topic == "sistemaRega"){
             return waterState
+        }else if (topic == "manMode"){
+            return manMode
         }
         return "Error"
     }
@@ -80,17 +82,23 @@ class MqttConnection(context: Context) : AppCompatActivity() {
                     hAr = message.toString()
                 }else if (topic == "humidadeSolo"){
                     hSol = message.toString().trim()
-                    if (message.toString().trim().toInt() < minHumidity.toInt() && !notifEnviada){
-                        enviarNotif(context)
-                        notifEnviada = true
-                        notifHandler.postDelayed({
-                            notifEnviada = false
-                        }, 15000)
+                    if (hSol.toFloat().toInt() < minHumidity.toInt()){
+                        if (!notifSent) {
+                            enviarNotif(context)
+                            notifSent = true
+                            Thread{
+                                Thread.sleep(60000)
+                                notifSent = false
+                            }.start()
+                        }
+
                     }
                 }else if (topic == "temperaturaCpu"){
                     tempCpu = message.toString()
                 }else if (topic == "sistemaRega"){
                     waterState = message.toString()
+                }else if (topic == "manMode"){
+                    manMode = message.toString()
                 }
                 onConnect("Message")
             }
@@ -102,6 +110,7 @@ class MqttConnection(context: Context) : AppCompatActivity() {
         options.userName = username
         options.password = password.toCharArray()
         options.isAutomaticReconnect = true
+        lastWillTopic = "LED"
         options.setWill(lastWillTopic, lastWillPayload.toByteArray(), 0, false)
         try {
             mqttClient.connect(options, null, object : IMqttActionListener {
@@ -113,6 +122,7 @@ class MqttConnection(context: Context) : AppCompatActivity() {
                     mqttClient.subscribe("humidadeSolo",1)
                     mqttClient.subscribe("temperaturaCpu",1)
                     mqttClient.subscribe("sistemaRega",1)
+                    mqttClient.subscribe("manMode",1)
                     onConnect("Success")
 
                 }
