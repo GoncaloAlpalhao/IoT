@@ -35,7 +35,7 @@ if wlan is None:
 print(wlan.ifconfig()[0])                  
 
 #MQTT
-mqtt_server = "192.168.72.212"    #IP do broker MQTT
+mqtt_server = "192.168.1.144"    #IP do broker MQTT
 client_id = "testmqtt3428709"     #ID do cliente MQTT
 topic_pub = "temperatura"         #Topico onde vai ser publicada a mensagem Last Will
 topic_sub = "LED"                 #Topico onde o raspberry vai subscrever
@@ -44,12 +44,16 @@ manual = False                    #Variável para indicar se o sistema está em 
 
 #Função de subscrição
 def sub_cb(topic, msg):
+    global is_Raining
+    global manual
     msg = msg.decode('utf-8').lower().strip()
     print("New message on topic {}".format(topic.decode('utf-8')), ": ", msg)
     #Se a mensagem for "on" ou "off", o LED liga ou desliga para simular o sistema de rega
-    if msg == "on":
+    if msg == "on" and manual == True:
+        client.publish("sistemaRega", msg, retain=True)
         LED.on()
-    elif msg == "off":
+    elif msg == "off" and manual == True:
+        client.publish("sistemaRega", msg, retain=True)
         LED.off()
     #Se a mensagem for "rain" ou "norain", a variável is_Raining é atualizada para simular o Rule Engine
     elif msg == "rain" and manual == False:
@@ -59,8 +63,10 @@ def sub_cb(topic, msg):
     #Se a mensagem for "manual" ou "automatic", a variável manual é atualizada para simular o Rule Engine
     elif msg == "manual":
         manual = True
+        client.publish("manMode", "manual", retain=True)
     elif msg == "automatic":
         manual = False
+        client.publish("manMode", "automatico", retain=True)
     #Se a mensagem não for "on" ou "off", o LED pisca 5 vezes para indicar que a mensagem não foi reconhecida
     else:
         blink(5,0.1)
@@ -94,12 +100,13 @@ def blink(max, pulse):
 
 #Função para iterar o subscritor de 1s em 1s durante 4s
 def sub_delay():
-    for i in range(3):
+    for i in range(12):
         client.check_msg()
-        time.sleep(1)
+        time.sleep(0.25)
 
 #Função para o sensor DHT20
 def messagePublisher():
+    global manual
     measurements = dht20.measurements
     moisture = (max_moisture-soil.read_u16())*100/(max_moisture-min_moisture)
     time.sleep(0.2)
@@ -127,18 +134,22 @@ def messagePublisher():
     #Check ao sistema de rega
     rainCheck(moisturePub)
     time.sleep(0.2)
-    #Publicar o estado do LED
-    client.publish("sistemaRega", LED.value(), retain=True)
-    time.sleep(0.2)
 
 #Função que verifica se a humidade do solo está dentro dos limites e se está a chover não rega
 def rainCheck(soil_moisture):
+    soil_moisture = float(soil_moisture)
+    global manual
+    if manual == True:
+        return
     if soil_moisture < 50 and is_Raining == False:
         LED.on()
+        client.publish("sistemaRega", "on", retain=True)
     elif soil_moisture < 20 and is_Raining == True:
         LED.on()
+        client.publish("sistemaRega", "on", retain=True)
     else:
         LED.off()
+        client.publish("sistemaRega", "off", retain=True)
 
 #Main (permite a subscrição e publicação em simultâneo)
 try:
@@ -154,3 +165,4 @@ while True:
         time.sleep(1)
     except OSError as e:
         reconnect()
+
