@@ -316,6 +316,76 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
+            <androidx.cardview.widget.CardView
+                android:id="@+id/MaxHumidity"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:layout_margin="10dp"
+                android:elevation="4dp"
+                app:cardCornerRadius="20dp"
+                android:backgroundTint="@color/white"
+                android:background="@color/white">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:weightSum="3">
+                    <!-- Maximum Humidity -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Máximo de Humidade Permitida"
+                        android:textStyle="bold"
+                        android:layout_marginStart="15dp"
+                        android:textColor="@android:color/black"
+                        android:textSize="18sp" />
+
+                    <EditText
+                        android:id="@+id/max_humidity_edit_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/edit_text_background"
+                        android:hint="75.00%"
+                        android:inputType="text"
+                        android:layout_marginStart="7dp"
+                        android:paddingStart="5dp"
+                        android:textColor="@android:color/black" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/plants"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:layout_margin="10dp"
+                android:elevation="4dp"
+                app:cardCornerRadius="20dp"
+                android:backgroundTint="@color/white"
+                android:background="@color/white">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:weightSum="3">
+                    <!-- Tipes of plants -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Tipo de Plantação"
+                        android:textStyle="bold"
+                        android:layout_marginStart="15dp"
+                        android:textColor="@android:color/black"
+                        android:textSize="18sp" />
+                   <Spinner
+                       android:id="@+id/spinner"
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
         </GridLayout>
 
