@@ -71,6 +71,11 @@ class SettingsActivity : AppCompatActivity() {
         // Set up the "Apply" button click listener to save the updated settings
         val applyButton = findViewById<Button>(R.id.save_button)
         applyButton.setOnClickListener {
+            // Verify that the min humidity is less than the max humidity
+            if (minHumidityEditText.text.toString().toInt() >= maxHumidityEditText.text.toString().toInt()) {
+                Toast.makeText(this, "Min humidade deve ser menor que a max humidade", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
             saveSettings()
         }
 
