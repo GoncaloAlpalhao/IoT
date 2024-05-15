@@ -238,7 +238,7 @@ class MainDashboard : AppCompatActivity() {
                 }
             }
         }
-        val apiKey = "9ec6b8792977153a9db9dc83d2134ec5"
+        val apiKey = "3328730c2c8279b83f61086f771f48f4"
         var city = "Tomar"
         getCurrentWeather(apiKey, city) { weatherDescription ->
             runOnUiThread {

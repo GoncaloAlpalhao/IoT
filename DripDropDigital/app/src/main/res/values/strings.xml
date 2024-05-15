@@ -16,4 +16,20 @@
     <string name="attachment_summary_on">Automatically download attachments for incoming emails
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
+
+    <string name="selected_item">Item selecionado: </string>
+    <!-- Plant Types -->
+    <string-array name="plantTypes">
+        <item>Trigo</item>
+        <item>Milho</item>
+        <item>Arroz</item>
+        <item>Soja</item>
+        <item>Batata</item>
+        <item>Algodão</item>
+        <item>Café</item>
+        <item>Cana-de-açúcar</item>
+        <item>Cenoura</item>
+        <item>Tomate</item>
+        <item>Outro</item>
+    </string-array>
 </resources>
