@@ -3,7 +3,7 @@ package com.example.dripdropdigital
 object PlantDataUtil {
 
     val plantTypes = listOf(
-        PlantType("Outro", 55.0, 75.0),
+        PlantType("Personalizado", 55.0, 75.0),
         PlantType("Trigo", 50.0, 75.0),
         PlantType("Milho", 60.0, 70.0),
         PlantType("Arroz", 70.0, 90.0),

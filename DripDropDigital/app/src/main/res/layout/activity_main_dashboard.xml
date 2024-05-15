@@ -30,7 +30,7 @@
 
     <GridLayout
         android:id="@+id/gridLayout"
-        android:layout_weight="1"
+        android:layout_weight="0.7"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:columnCount="2"
@@ -59,7 +59,7 @@
                     android:layout_height="wrap_content"
                     android:text="Whole Bunch of turbulence"
                     android:textColor="@color/white"
-                    android:textSize="20sp"
+                    android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/weatherIcon"
@@ -83,8 +83,9 @@
 
         <androidx.cardview.widget.CardView
             android:id="@+id/NDVI"
-            android:layout_columnWeight="1"
+            android:layout_columnWeight="0.75"
             android:layout_rowWeight="1"
+            app:cardBackgroundColor="@color/white"
             app:cardCornerRadius="15dp"
             android:layout_margin="10dp"
             android:elevation="4dp"

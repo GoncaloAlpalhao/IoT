@@ -72,36 +72,52 @@ class SettingsActivity : AppCompatActivity() {
         val applyButton = findViewById<Button>(R.id.save_button)
         applyButton.setOnClickListener {
             // Verify that the min humidity is less than the max humidity
-            if (minHumidityEditText.text.toString().toInt() >= maxHumidityEditText.text.toString().toInt()) {
+            if (minHumidityEditText.text.toString().toDouble() >= maxHumidityEditText.text.toString().toDouble()) {
                 Toast.makeText(this, "Min humidade deve ser menor que a max humidade", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             saveSettings()
         }
 
-        // set upt the tipes of plants
+        // set upt the types of plants
         val plantTypes = PlantDataUtil.plantTypes
 
         // set up the spinner for the plant types showing the name of the plant
         if (spinner != null) {
             val adapter = ArrayAdapter(this,
-                android.R.layout.simple_spinner_item, plantTypes.map { it.name })
+                R.layout.list_item, plantTypes.map { it.name })
             spinner.adapter = adapter
 
             spinner.onItemSelectedListener = object :
                 AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>,
                                             view: View, position: Int, id: Long) {
-                    Toast.makeText(this@SettingsActivity,
-                        getString(R.string.selected_item) + " " +
-                                "" + plantTypes[position].name, Toast.LENGTH_SHORT
-                    ).show()
+//                    Toast.makeText(this@SettingsActivity,
+//                        getString(R.string.selected_item) + " " +
+//                                "" + plantTypes[position].name, Toast.LENGTH_SHORT
+//                    ).show()
 
                     // change the min humidity value to the selected plant
                     minHumidityEditText.setText(plantTypes[position].minHumidity.toString())
 
                     // change the max humidity value to the selected plant
                     maxHumidityEditText.setText(plantTypes[position].maxHumidity.toString())
+
+                    // if the plant type selected is other than "Personalizado" then the min and max humidity values are disabled
+                    if (plantTypes[position].name != "Personalizado") {
+                        minHumidityEditText.isEnabled = false
+                        maxHumidityEditText.isEnabled = false
+                        // change their cards background to gray
+                        minHumidityEditText.setBackgroundResource(R.drawable.edit_text_background_disabled)
+                        maxHumidityEditText.setBackgroundResource(R.drawable.edit_text_background_disabled)
+                    } else {
+                        minHumidityEditText.isEnabled = true
+                        maxHumidityEditText.isEnabled = true
+                        // change their cards background to white
+                        minHumidityEditText.setBackgroundResource(R.drawable.edit_text_background)
+                        maxHumidityEditText.setBackgroundResource(R.drawable.edit_text_background)
+                    }
+
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>) {
