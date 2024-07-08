@@ -3,18 +3,21 @@ package com.example.dripdropdigital
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class SystemList : AppCompatActivity() {
 
     // Declare the floating action button
     private lateinit var fab: FloatingActionButton
+    private lateinit var fabDel: FloatingActionButton
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -29,12 +32,18 @@ class SystemList : AppCompatActivity() {
 
         // Initialize the floating action button
         fab = findViewById(R.id.fabAddSystem)
+        fabDel = findViewById(R.id.fabDeleteSystem)
 
         // Set the click listener for the floating action button
         fab.setOnClickListener {
             // Call the activity to add a new system
             val intent = Intent(this, NewSystem::class.java)
             startActivity(intent)
+        }
+
+        fabDel.setOnClickListener {
+            onDeleteConfirmation()
+            listSystems()
         }
 
         listSystems()
@@ -44,8 +53,13 @@ class SystemList : AppCompatActivity() {
     private fun listSystems() {
         val localSystems = LocalStorage.getPlants(this)
 
+        val recyclerView = findViewById<RecyclerView>(R.id.systemList)
+
+        recyclerView.adapter = null
+
         if (localSystems.isNullOrEmpty()){
             Log.e("SystemList", "No systems found")
+            Toast.makeText(this, "Não foram encontrados sistemas", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -60,10 +74,6 @@ class SystemList : AppCompatActivity() {
 
         val allSystems: List<SystemItem> = systems
 
-        val recyclerView = findViewById<RecyclerView>(R.id.systemList)
-
-        recyclerView.adapter = null
-
         val adapter = SystemListAdapter(allSystems, this, object: SystemListAdapter.OnItemClickListener {
             override fun onItemClick(position: Int, system: SystemItem) {
                 val intent = Intent(this@SystemList, MainDashboard::class.java)
@@ -77,7 +87,18 @@ class SystemList : AppCompatActivity() {
         val layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         recyclerView.layoutManager = layoutManager
 
+    }
 
+    private fun onDeleteConfirmation(){
+        val builder = MaterialAlertDialogBuilder(this)
+        builder.setTitle("Apagar todos os sistemas")
+        builder.setMessage("Tem a certeza que deseja apagar todos os sistemas?")
+        builder.setPositiveButton("Sim") { _, _ ->
+            LocalStorage.deleteLocations(this)
+            listSystems()
+        }
+        builder.setNegativeButton("Não") { dialog, _ -> dialog.dismiss() }
+        builder.show()
     }
 
     override fun onResume() {

@@ -33,6 +33,20 @@
         </LinearLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabDeleteSystem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|bottom"
+            android:src="@drawable/ic_delete"
+            android:tooltipText="Apagar Sistemas"
+            android:contentDescription="Apagar Todos os Sistemas"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="16dp"
+            app:tint= "@color/white"
+            app:backgroundTint="@color/teal_200"
+            app:rippleColor="@color/black"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabAddSystem"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
