@@ -25,17 +25,17 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions
 import org.eclipse.paho.client.mqttv3.MqttException
 import org.eclipse.paho.client.mqttv3.MqttMessage
 
-class MqttConnection(context: Context) : AppCompatActivity() {
+class MqttConnection(context: Context, system: SystemItem) : AppCompatActivity() {
 
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences("mqtt_settings", MODE_PRIVATE)
 
-    private val ipAddress: String = sharedPreferences.getString("ip_address", "") ?: "0.0.0.0"
-    private val clientId: String = sharedPreferences.getString("client_id", "") ?: "123"
-    private val username: String = sharedPreferences.getString("username", "") ?: "test"
-    private val password: String = sharedPreferences.getString("password", "") ?: "123"
-    private var lastWillTopic: String = sharedPreferences.getString("last_will_topic", "") ?: "ltt"
-    private var lastWillPayload: String = sharedPreferences.getString("last_will_payload", "") ?: "ltt"
-    private val minHumidity: String = sharedPreferences.getString("min_humidity", "") ?: "20"
+    private val ipAddress: String = system.ipAddress.toString()
+    private val clientId: String = system.clientId.toString()
+    private val username: String = system.username.toString()
+    private val password: String = system.password.toString()
+    private var lastWillTopic: String = system.lastWillTopic.toString()
+    private var lastWillPayload: String = system.lastWillPayload.toString()
+    private val minHumidity: String = system.minHumidity.toString()
 
     var temp: String = "0"
     var hAr: String = "0"

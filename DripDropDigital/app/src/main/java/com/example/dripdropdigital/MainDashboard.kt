@@ -2,30 +2,29 @@ package com.example.dripdropdigital
 
 import android.annotation.SuppressLint
 import android.graphics.Color
-import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
+import android.location.Address
+import android.location.Geocoder
 import android.os.Bundle
 import android.transition.AutoTransition
 import android.transition.TransitionManager
 import android.view.View
 import android.widget.FrameLayout
-import android.widget.GridLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
-import androidx.cardview.widget.CardView
+import androidx.appcompat.app.AppCompatActivity
 import com.airbnb.lottie.LottieAnimationView
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.Viewport
-import com.jjoe64.graphview.helper.StaticLabelsFormatter
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
 import okhttp3.*
 import org.json.JSONObject
 import java.io.IOException
-import java.util.Random
+import java.util.Locale
+
 
 class MainDashboard : AppCompatActivity() {
 
@@ -63,10 +62,14 @@ class MainDashboard : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_dashboard)
         supportActionBar?.hide()
+
+        // Get the extra from the intent
+        val system = intent.getSerializableExtra("system") as SystemItem
+
         val loadingLayout = findViewById<FrameLayout>(R.id.loadingLayout)
         var loadingGif = findViewById<LottieAnimationView>(R.id.lottie)
         loadingLayout.visibility = View.VISIBLE
-        var mqttTest = MqttConnection(this)
+        var mqttTest = MqttConnection(this, system)
         temp = findViewById(R.id.temperature)
         hSol = findViewById(R.id.humiditySoil)
         hAir = findViewById(R.id.humidityAir)
@@ -239,18 +242,28 @@ class MainDashboard : AppCompatActivity() {
             }
         }
         val apiKey = "3328730c2c8279b83f61086f771f48f4"
-        var city = "Tomar"
-        getCurrentWeather(apiKey, city) { weatherDescription ->
-            runOnUiThread {
-                cityT.text = "$city\t\t$cityTemp\n$weatherDescription"
-                //If the weather all decapitalized contains "Rain" set isRaining = rain
-                if (isRain){
-                    rainState = "rain"
-                }else{
-                    rainState = "norain"
-                }
-                weatherIcon.setImageResource(resources.getIdentifier(weatherIconSet, "drawable", packageName))
+        val geocoder = Geocoder(this, Locale.getDefault())
+        val lat = system.location?.split(",")?.get(0)?.toDouble()
+        val long = system.location?.split(",")?.get(1)?.toDouble()
+        val addresses: MutableList<Address>? = lat?.let { long?.let { it1 ->
+            geocoder.getFromLocation(it,
+                it1, 1)
+        } }
+        val adress: Address? = addresses?.getOrNull(0)
+        val city = adress?.locality
+        if (city != null) {
+            getCurrentWeather(apiKey, city) { weatherDescription ->
+                runOnUiThread {
+                    cityT.text = "$city\t\t$cityTemp\n$weatherDescription"
+                    //If the weather all decapitalized contains "Rain" set isRaining = rain
+                    if (isRain){
+                        rainState = "rain"
+                    }else{
+                        rainState = "norain"
+                    }
+                    weatherIcon.setImageResource(resources.getIdentifier(weatherIconSet, "drawable", packageName))
 
+                }
             }
         }
     }

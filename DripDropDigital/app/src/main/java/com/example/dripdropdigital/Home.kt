@@ -37,7 +37,8 @@ class Home : AppCompatActivity() {
         })
 
         connect.setOnClickListener {
-            val intent = Intent(this, MainDashboard::class.java)
+            // val intent = Intent(this, MainDashboard::class.java)
+            val intent = Intent(this, SystemList::class.java)
             startActivity(intent)
         }
 

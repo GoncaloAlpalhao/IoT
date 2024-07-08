@@ -143,13 +143,13 @@ class MainActivity : AppCompatActivity() {
             .setAutoCancel(true)
 
 
-        val connectBtn: Button = findViewById(R.id.connect)
-        connectBtn.setOnClickListener{
-            //Lets try our new connection class
-            var mqtttest = MqttConnection(this)
-            mqtttest.connect(this)
-            //connect(this)
-        }
+//        val connectBtn: Button = findViewById(R.id.connect)
+//        connectBtn.setOnClickListener{
+//            //Lets try our new connection class
+//            var mqtttest = MqttConnection(this)
+//            mqtttest.connect(this)
+//            //connect(this)
+//        }
 
         val publishBtn: Button = findViewById(R.id.publish)
         publishBtn.setOnClickListener{
