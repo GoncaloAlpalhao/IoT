@@ -12,12 +12,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 // Esta classe é responsável por associar os dados da lista de sistemas a um elemento do layout
-class SystemListAdapter(private val system: List<SystemID>, private val context: Context, private val itemClickListener: OnItemClickListener) :
+class SystemListAdapter(private val system: List<SystemItem>, private val context: Context, private val itemClickListener: OnItemClickListener) :
     RecyclerView.Adapter<SystemListAdapter.ViewHolder>() {
 
     // Interface para o evento de click
     interface OnItemClickListener {
-        fun onItemClick(position: Int, location: SystemID)
+        fun onItemClick(position: Int, system: SystemItem)
     }
 
     // Associa os dados da lista de sistemas a um elemento do layout
@@ -43,38 +43,32 @@ class SystemListAdapter(private val system: List<SystemID>, private val context:
 
     // Esta classe é responsável por associar os dados da lista de sistemas a um elemento do layout
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bindView(systems: SystemID) {
+        fun bindView(systems: SystemItem) {
             val image: ImageView = itemView.findViewById(R.id.system_item_image)
             val title: TextView = itemView.findViewById(R.id.system_item_title)
             val location: TextView = itemView.findViewById(R.id.system_item_location)
 
-            // Valida a imagem
-            if (systems.image == "noimage"){
-                image.setImageResource(R.drawable.no_image)
-            } else {
-                val decodedImage = decodeBase64(systems.image)
-                decodedImage?.let {
-                    image.setImageBitmap(it)
-                }
-            }
-
+            image.setImageResource(R.drawable.no_image)
             title.text = systems.title
-            location.text = systems.location
+            location.text = systems.location?.let { getStreetName(it) }
         }
 
-        // função para converter uma string Base64 para bitmap
-        private fun decodeBase64(encodedString: String?): Bitmap? {
-            if (encodedString.isNullOrEmpty()) return null
+        // Função para obter o nome da rua a partir das coordenadas
+        private fun getStreetName(location: String): String {
+            val coordinates = location.split(",")
+            val latitude = coordinates[0].toDouble()
+            val longitude = coordinates[1].toDouble()
+            val geocoder = android.location.Geocoder(itemView.context)
+            val addresses = geocoder.getFromLocation(latitude, longitude, 1)
+            if( addresses != null) {
+                if (addresses.isEmpty()) return "Rua desconhecida"
+            } else return "Rua desconhecida"
 
-            return try {
-                Log.d("Base64", "Encoded String: $encodedString")
-                val decodedBytes = android.util.Base64.decode(encodedString, android.util.Base64.DEFAULT)
-                BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
-            } catch (e: IllegalArgumentException) {
-                // Handle the case where decoding fails
-                e.printStackTrace()
-                null
-            }
+            return addresses[0].getAddressLine(0)
         }
+
     }
+
+
+
     }

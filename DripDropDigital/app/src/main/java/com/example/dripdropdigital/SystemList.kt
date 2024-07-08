@@ -15,7 +15,6 @@ class SystemList : AppCompatActivity() {
 
     // Declare the floating action button
     private lateinit var fab: FloatingActionButton
-    private var test: Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -36,64 +35,54 @@ class SystemList : AppCompatActivity() {
             // Call the activity to add a new system
             val intent = Intent(this, NewSystem::class.java)
             startActivity(intent)
-            test = 2
         }
 
-        // Call the function to add a new system
-        exampleLocation()
+        listSystems()
 
     }
 
-    // Função para adicionar uma localização no layout da lista
-    private fun exampleLocation(callback: (() -> Unit)? = null) {
-        // Obter a recyclerview
-        val recyclerView = findViewById<RecyclerView>(R.id.systemList)
+    private fun listSystems() {
+        val localSystems = LocalStorage.getPlants(this)
 
-        // Esvaziar a lista
-        recyclerView.adapter = null
-
-        // Criar uma lista de localizações de exemplo
-        val exampleLocation = mutableListOf<SystemID>()
-        exampleLocation.add(SystemID("noimage", "Horta do Mário", "Atrás Do Armário", 0))
-
-        if (test == 1) {
-            exampleLocation.add(SystemID("noimage", "Epa Ya", "Foi Mesmo", 1))
+        if (localSystems.isNullOrEmpty()){
+            Log.e("SystemList", "No systems found")
+            return
         }
 
-        // Criar um novo adapter
-        val adapter = SystemListAdapter(exampleLocation, this, object: SystemListAdapter.OnItemClickListener {
-            override fun onItemClick(position: Int, location: SystemID) {
-                // Chama o maindashboard
+        val systemStrings = localSystems.split(";")
+
+        val systems = mutableListOf<SystemItem>()
+
+        for (system in systemStrings){
+            val systemData = system.split("|")
+            systems.add(SystemItem(systemData[0], systemData[1], systemData[2], systemData[3], systemData[4], systemData[5], systemData[6], systemData[7], systemData[8], systemData[9], systemData[10]))
+        }
+
+        val allSystems: List<SystemItem> = systems
+
+        val recyclerView = findViewById<RecyclerView>(R.id.systemList)
+
+        recyclerView.adapter = null
+
+        val adapter = SystemListAdapter(allSystems, this, object: SystemListAdapter.OnItemClickListener {
+            override fun onItemClick(position: Int, system: SystemItem) {
                 val intent = Intent(this@SystemList, MainDashboard::class.java)
+                intent.putExtra("system", system)
                 startActivity(intent)
             }
         })
 
-        // Definir o novo adapter
         recyclerView.adapter = adapter
 
-        // Definir o novo layout manager
         val layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         recyclerView.layoutManager = layoutManager
 
-        // Mostrar o layout
-        recyclerView.visibility = RecyclerView.VISIBLE
-
-        // After setting the adapter and layout manager for the RecyclerView, add this line:
-        Log.d("SystemList", "exampleLocation: $exampleLocation")
-        Log.d("SystemList", "exampleLocation: ${recyclerView.childCount}")
 
     }
 
     override fun onResume() {
         super.onResume()
-
-        // ignora isto, trust me
-        if (test == 0)
-            exampleLocation()
-        else if (test == 2)
-            test = 1
-            exampleLocation()
+        listSystems()
     }
 
 
