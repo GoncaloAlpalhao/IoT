@@ -34,10 +34,11 @@ import java.util.Locale
 class MainDashboard : AppCompatActivity() {
 
     // UI elements
+    private lateinit var ndvi: TextView
     private lateinit var temp: TextView
     private lateinit var hSol: TextView
     private lateinit var hAir: TextView
-    private lateinit var tempCpu: TextView
+    private lateinit var windVelocity: TextView
     private lateinit var cityT: TextView
     private lateinit var ledState: TextView
     private lateinit var weatherIcon: ImageView
@@ -84,10 +85,11 @@ class MainDashboard : AppCompatActivity() {
         // Initialize the MQTT connection
         val mqttTest = MqttConnection(this, system)
 
+        ndvi = findViewById(R.id.ndviValue)
         temp = findViewById(R.id.temperature)
         hSol = findViewById(R.id.humiditySoil)
         hAir = findViewById(R.id.humidityAir)
-        tempCpu = findViewById(R.id.temperatureCPU)
+        windVelocity = findViewById(R.id.windVelocity)
         cityT = findViewById(R.id.city)
         ledState = findViewById(R.id.ledState)
         weatherIcon = findViewById(R.id.weatherIcon)
@@ -98,20 +100,22 @@ class MainDashboard : AppCompatActivity() {
 
         // Set up switch listeners
         switchRega.setOnCheckedChangeListener { _, isChecked ->
+            if (manState.text == "Automático")
+                return@setOnCheckedChangeListener
             if (flagSwitch) {
                 if (isChecked) {
-                    mqttTest.publish("LED", "on")
+                    mqttTest.publish("rega", "\"ON\"", retained = true)
                 } else {
-                    mqttTest.publish("LED", "off")
+                    mqttTest.publish("rega", "\"OFF\"", retained = true)
                 }
             }
         }
         switchModo.setOnCheckedChangeListener { _, isChecked ->
             if (flagSwitch2) {
                 if (isChecked) {
-                    mqttTest.publish("LED", "manual", retained = true)
+                    mqttTest.publish("manMode", "manual", retained = true)
                 } else {
-                    mqttTest.publish("LED", "automatic", retained = true)
+                    mqttTest.publish("manMode", "automatico", retained = true)
                 }
             }
         }
@@ -136,6 +140,10 @@ class MainDashboard : AppCompatActivity() {
         mqttTest.connect(this) { callBack ->
             runOnUiThread {
                 if (callBack == "Message") {
+
+                    var ndviVal = mqttTest.newMessage("ndvi")
+                    ndvi.text = ndviVal
+
                     var temperaturaAmbient = mqttTest.newMessage("temperatura")
                     makeGraph1(temperaturaAmbient)
                     temp.text = temperaturaAmbient + "°C"
@@ -155,17 +163,17 @@ class MainDashboard : AppCompatActivity() {
                     }
                     hSol.text = humidadeSolo + "%"
 
-                    var temperaturaCPU = mqttTest.newMessage("temperaturaCpu")
-                    makeGraph4(temperaturaCPU)
-                    tempCpu.text = temperaturaCPU + "°C"
+                    var velVento = mqttTest.newMessage("velocidadeVento")
+                    makeGraph4(velVento)
+                    windVelocity.text = velVento + "km/h"
 
-                    var sistemaRega = mqttTest.newMessage("sistemaRega")
-                    if (sistemaRega == "on") {
+                    var sistemaRega = mqttTest.newMessage("rega")
+                    if (sistemaRega == "\"ON\"") {
                         flagSwitch = false
                         ledState.text = "Ligado"
                         switchRega.isChecked = true
                         ledState.setTextColor(Color.parseColor("#00C6AF"))
-                    } else if (sistemaRega == "off") {
+                    } else if (sistemaRega == "\"OFF\"") {
                         flagSwitch = false
                         ledState.text = "Desligado"
                         switchRega.isChecked = false
@@ -253,10 +261,10 @@ class MainDashboard : AppCompatActivity() {
                 runOnUiThread {
                     cityT.text = "$city\t\t$cityTemp\n$weatherDescription"
                     //If the weather all decapitalized contains "Rain" set isRaining = rain
-                    if (isRain) {
-                        rainState = "rain"
+                    rainState = if (isRain) {
+                        "rain"
                     } else {
-                        rainState = "norain"
+                        "norain"
                     }
                     weatherIcon.setImageResource(
                         resources.getIdentifier(

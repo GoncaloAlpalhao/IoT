@@ -3,7 +3,6 @@ package com.example.dripdropdigital.backend
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.content.SharedPreferences
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
@@ -37,7 +36,10 @@ class MqttConnection(context: Context, system: SystemItem) : AppCompatActivity()
     var temp: String = "0"
     var hAr: String = "0"
     var hSol: String = "0"
-    var tempCpu: String = "0"
+    var windVel: String = "0"
+    var ndvi: String = "0"
+    var watering: String = "0"
+    var windVelocity: String = "0"
     var waterState: String = "Unknown"
     var isConected: Boolean = false
     var manMode = "Unknown"
@@ -65,8 +67,16 @@ class MqttConnection(context: Context, system: SystemItem) : AppCompatActivity()
                 return hSol
             }
 
-            "temperaturaCpu" -> {
-                return tempCpu
+            "ndvi" -> {
+                return ndvi
+            }
+
+            "rega" -> {
+                return watering
+            }
+
+            "velocidadeVento" -> {
+                return windVelocity
             }
 
             "sistemaRega" -> {
@@ -75,6 +85,10 @@ class MqttConnection(context: Context, system: SystemItem) : AppCompatActivity()
 
             "manMode" -> {
                 return manMode
+            }
+
+            "LED" -> {
+                return "LED"
             }
 
             else -> return "Error"
@@ -114,12 +128,16 @@ class MqttConnection(context: Context, system: SystemItem) : AppCompatActivity()
                         }
 
                     }
-                } else if (topic == "temperaturaCpu") {
-                    tempCpu = message.toString()
+                } else if (topic == "velocidadeVento") {
+                    windVelocity = message.toString()
                 } else if (topic == "sistemaRega") {
                     waterState = message.toString()
                 } else if (topic == "manMode") {
                     manMode = message.toString()
+                } else if (topic == "ndvi") {
+                    ndvi = message.toString()
+                } else if (topic == "rega") {
+                    watering = message.toString()
                 }
                 onConnect("Message")
             }
@@ -130,8 +148,8 @@ class MqttConnection(context: Context, system: SystemItem) : AppCompatActivity()
         })
 
         val options = MqttConnectOptions()
-        options.userName = username
-        options.password = password.toCharArray()
+        //options.userName = username
+        //options.password = password.toCharArray()
         options.isAutomaticReconnect = true
         lastWillTopic = "LED"
         options.setWill(lastWillTopic, lastWillPayload.toByteArray(), 0, false)
@@ -144,7 +162,9 @@ class MqttConnection(context: Context, system: SystemItem) : AppCompatActivity()
                     mqttClient.subscribe("temperatura", 1)
                     mqttClient.subscribe("humidadeAr", 1)
                     mqttClient.subscribe("humidadeSolo", 1)
-                    mqttClient.subscribe("temperaturaCpu", 1)
+                    mqttClient.subscribe("velocidadeVento", 1)
+                    mqttClient.subscribe("ndvi", 1)
+                    mqttClient.subscribe("rega", 1)
                     mqttClient.subscribe("sistemaRega", 1)
                     mqttClient.subscribe("manMode", 1)
                     onConnect("Success")
