@@ -1,8 +1,11 @@
-package com.example.dripdropdigital
+package com.example.dripdropdigital.systems
 
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
+/**
+ * Represents system item data
+ */
 data class SystemItem(
     @SerializedName("title") val title: String?,
     @SerializedName("location") val location: String?,
@@ -15,4 +18,4 @@ data class SystemItem(
     @SerializedName("min_humidity") val minHumidity: String?,
     @SerializedName("max_humidity") val maxHumidity: String?,
     @SerializedName("plant_type") val plantType: String?
-): Serializable
+) : Serializable

@@ -1,12 +1,15 @@
-package com.example.dripdropdigital
+package com.example.dripdropdigital.userinterface
 
 import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.cardview.widget.CardView
+import com.example.dripdropdigital.R
 
-
+/**
+ * This class is responsible for displaying the tutorial page of the application
+ */
 class TutorialActivity : AppCompatActivity() {
 
     lateinit var connect: CardView

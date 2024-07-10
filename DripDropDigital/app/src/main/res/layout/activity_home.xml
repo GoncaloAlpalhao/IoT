@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:weightSum="5"
     android:layout_height="match_parent"
-    tools:context=".Home">
+    tools:context=".userinterface.Home">
 <RelativeLayout
     android:layout_weight="2"
     android:layout_width="match_parent"

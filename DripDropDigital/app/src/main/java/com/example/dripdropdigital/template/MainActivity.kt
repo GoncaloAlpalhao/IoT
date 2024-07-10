@@ -1,4 +1,4 @@
-package com.example.dripdropdigital
+package com.example.dripdropdigital.template
 
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
@@ -14,12 +14,19 @@ import android.util.Log
 import android.widget.*
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.example.dripdropdigital.R
+import com.example.dripdropdigital.userinterface.SettingsActivity
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 
+/**
+ * Unused template code from earlier versions of the app.
+ * This code is not used in the current version of the app.
+ * It is kept here for reference and possible future use.
+ */
 class MainActivity : AppCompatActivity() {
 
     lateinit var listView: ListView
@@ -49,22 +56,22 @@ class MainActivity : AppCompatActivity() {
 
         // Retrieve values from sharedPreferences
         ipAddress = sharedPreferences.getString("ip_address", "") ?: "0.0.0.0"
-        if(ipAddress.isEmpty())
+        if (ipAddress.isEmpty())
             ipAddress = "0.0.0.0"
         clientId = sharedPreferences.getString("client_id", "") ?: "123"
-        if(clientId.isEmpty())
+        if (clientId.isEmpty())
             clientId = "123"
         username = sharedPreferences.getString("username", "") ?: "test"
-        if(username.isEmpty())
+        if (username.isEmpty())
             username = "test"
         password = sharedPreferences.getString("password", "") ?: "123"
-        if(password.isEmpty())
+        if (password.isEmpty())
             password = "123"
         lastWillTopic = sharedPreferences.getString("last_will_topic", "") ?: "ltt"
-        if(lastWillTopic.isEmpty())
+        if (lastWillTopic.isEmpty())
             lastWillTopic = "ltt"
         lastWillPayload = sharedPreferences.getString("last_will_payload", "") ?: "ltt"
-        if(lastWillPayload.isEmpty())
+        if (lastWillPayload.isEmpty())
             lastWillPayload = "ltt"
 
         // on below line we are initializing
@@ -132,7 +139,8 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
-        val pendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+        val pendingIntent: PendingIntent =
+            PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
 
         var builder = NotificationCompat.Builder(this, "dripdrop")
             .setSmallIcon(R.drawable.dripdropdigitalsmol)
@@ -152,20 +160,20 @@ class MainActivity : AppCompatActivity() {
 //        }
 
         val publishBtn: Button = findViewById(R.id.publish)
-        publishBtn.setOnClickListener{
-            publish("temperatura","teste",1,false)
+        publishBtn.setOnClickListener {
+            publish("temperatura", "teste", 1, false)
         }
 
         val disconnectBtn: Button = findViewById(R.id.disconnect)
-        disconnectBtn.setOnClickListener{
+        disconnectBtn.setOnClickListener {
             disconnect()
         }
 
         val onBtn: Button = findViewById(R.id.on)
-        onBtn.setOnClickListener{
-            if(mqttClient.isConnected){
-                publish("LED","on",1,true)
-            }else{
+        onBtn.setOnClickListener {
+            if (mqttClient.isConnected) {
+                publish("LED", "on", 1, true)
+            } else {
                 Toast.makeText(this, "No conection bruh \uD83E\uDD28", Toast.LENGTH_SHORT).show()
                 with(NotificationManagerCompat.from(this)) {
                     // notificationId is a unique int for each notification that you must define
@@ -175,16 +183,16 @@ class MainActivity : AppCompatActivity() {
         }
 
         val offBtn: Button = findViewById(R.id.off)
-        offBtn.setOnClickListener{
-            if(mqttClient.isConnected){
-                publish("LED","off",1,true)
-            }else{
+        offBtn.setOnClickListener {
+            if (mqttClient.isConnected) {
+                publish("LED", "off", 1, true)
+            } else {
                 Toast.makeText(this, "No conection bruh \uD83E\uDD28", Toast.LENGTH_SHORT).show()
             }
         }
 
         val settingsBtn: Button = findViewById(R.id.subscribe)
-        settingsBtn.setOnClickListener{
+        settingsBtn.setOnClickListener {
             /*listView = findViewById(R.id.lista)
             arrayAdapter = ArrayAdapter(this, R.layout.list_item, R.id.text1, list)
             list.add("Random shit go!")
@@ -197,19 +205,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     private lateinit var mqttClient: MqttAndroidClient
+
     // TAG
     companion object {
         const val TAG = "AndroidMqttClient"
     }
 
-    fun newMessage(message: String){
+    fun newMessage(message: String) {
         val regex = Regex("""\d+(\.\d+)?""") // matches any decimal number
 
         val matchResult = regex.find(message)
         val numberString = matchResult?.value // the matched number string, e.g. "238.56"
 
-        if(!numberString.isNullOrEmpty()){
-            val number = numberString.toDouble() // parse the number string to a Double or return null
+        if (!numberString.isNullOrEmpty()) {
+            val number =
+                numberString.toDouble() // parse the number string to a Double or return null
             // Create a new data point with x = current X value + 1 and y = new Y value.
             val newDataPoint = DataPoint(latestX++, number)
             // Append the new data point to the series.
@@ -225,7 +235,7 @@ class MainActivity : AppCompatActivity() {
     fun connect(context: Context) {
         //val serverURI = "tcp://192.168.1.119:1883"
         val serverURI = "tcp://$ipAddress"
-        if(mqttClient.isConnected){
+        if (mqttClient.isConnected) {
             Toast.makeText(this, "Already Connected?? \uD83D\uDE11", Toast.LENGTH_SHORT).show()
             return
         }
@@ -238,7 +248,11 @@ class MainActivity : AppCompatActivity() {
 
             override fun connectionLost(cause: Throwable?) {
                 Log.d(TAG, "Connection lost ${cause.toString()}")
-                Toast.makeText(this@MainActivity, "Connection died for a reason \uD83D\uDE1E", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@MainActivity,
+                    "Connection died for a reason \uD83D\uDE1E",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
 
             override fun deliveryComplete(token: IMqttDeliveryToken?) {
@@ -253,13 +267,21 @@ class MainActivity : AppCompatActivity() {
             mqttClient.connect(options, null, object : IMqttActionListener {
                 override fun onSuccess(asyncActionToken: IMqttToken?) {
                     Log.d(TAG, "Connection success")
-                    mqttClient.subscribe("temperatura",1)
-                    Toast.makeText(this@MainActivity, "Bro got the connection successfully \uD83D\uDC4D", Toast.LENGTH_SHORT).show()
+                    mqttClient.subscribe("temperatura", 1)
+                    Toast.makeText(
+                        this@MainActivity,
+                        "Bro got the connection successfully \uD83D\uDC4D",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
 
                 override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
                     Log.d(TAG, "Connection failure")
-                    Toast.makeText(this@MainActivity, "Bro did not get the connection \uD83D\uDE2B", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@MainActivity,
+                        "Bro did not get the connection \uD83D\uDE2B",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             })
         } catch (e: MqttException) {
@@ -269,7 +291,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun publish(topic: String, msg: String, qos: Int = 1, retained: Boolean = false) {
-        if(!mqttClient.isConnected){
+        if (!mqttClient.isConnected) {
             Toast.makeText(this, "No conection bruh \uD83E\uDD28", Toast.LENGTH_SHORT).show()
             return
         }
@@ -293,7 +315,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun disconnect() {
-        if(!mqttClient.isConnected){
+        if (!mqttClient.isConnected) {
             Toast.makeText(this, "No conection bruh \uD83E\uDD28", Toast.LENGTH_SHORT).show()
             return
         }
@@ -301,12 +323,20 @@ class MainActivity : AppCompatActivity() {
             mqttClient.disconnect(null, object : IMqttActionListener {
                 override fun onSuccess(asyncActionToken: IMqttToken?) {
                     Log.d(TAG, "Disconnected")
-                    Toast.makeText(this@MainActivity, "Bro killed the connection \uD83D\uDD2A", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@MainActivity,
+                        "Bro killed the connection \uD83D\uDD2A",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
 
                 override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
                     Log.d(TAG, "Failed to disconnect")
-                    Toast.makeText(this@MainActivity, "Bro can't run \uD83D\uDE28 Failed to Disconnect", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@MainActivity,
+                        "Bro can't run \uD83D\uDE28 Failed to Disconnect",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             })
         } catch (e: MqttException) {
@@ -315,7 +345,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun subscribe(topic: String, qos: Int = 1) {
-        if(!mqttClient.isConnected){
+        if (!mqttClient.isConnected) {
             Toast.makeText(this, "No conection bruh \uD83E\uDD28", Toast.LENGTH_SHORT).show()
             return
         }

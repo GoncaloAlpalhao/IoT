@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#0C1920"
-    tools:context=".MainActivity">
+    tools:context=".template.MainActivity">
 
     <GridLayout
             android:id="@+id/grid"

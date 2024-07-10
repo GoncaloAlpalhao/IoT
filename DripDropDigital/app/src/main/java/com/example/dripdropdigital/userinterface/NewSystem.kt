@@ -1,6 +1,11 @@
-package com.example.dripdropdigital
+package com.example.dripdropdigital.userinterface
 
+import android.Manifest
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
@@ -10,14 +15,28 @@ import android.widget.EditText
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.example.dripdropdigital.backend.LocalStorage
+import com.example.dripdropdigital.systems.PlantDataUtil
+import com.example.dripdropdigital.R
 
-class SettingsActivity : AppCompatActivity() {
+/**
+ * This class is responsible for displaying the new system page of the application
+ */
+class NewSystem : AppCompatActivity(), LocationListener {
 
     private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var locationManager: LocationManager
+    private val locationPermissionCode = 2
+    private lateinit var location: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.settings_activity)
+        setContentView(R.layout.activity_new_system)
+
+        // Get the location
+        getLocation()
 
         // Initialize the SharedPreferences instance
         sharedPreferences = getSharedPreferences("mqtt_settings", MODE_PRIVATE)
@@ -92,10 +111,6 @@ class SettingsActivity : AppCompatActivity() {
                 AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>,
                                             view: View, position: Int, id: Long) {
-//                    Toast.makeText(this@SettingsActivity,
-//                        getString(R.string.selected_item) + " " +
-//                                "" + plantTypes[position].name, Toast.LENGTH_SHORT
-//                    ).show()
 
                     // change the min humidity value to the selected plant
                     minHumidityEditText.setText(plantTypes[position].minHumidity.toString())
@@ -121,7 +136,6 @@ class SettingsActivity : AppCompatActivity() {
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>) {
-                    // write code to perform some action
                 }
             }
         }
@@ -129,39 +143,60 @@ class SettingsActivity : AppCompatActivity() {
 
     // ...
 
+    /**
+     * Save the settings of the new system.
+     */
     private fun saveSettings() {
-        val editor = sharedPreferences.edit()
-
+        // Get the values from the views
+        val title = findViewById<EditText>(R.id.title_text)
         val ipAddressEditText = findViewById<EditText>(R.id.ip_address_edit_text)
-        editor.putString("ip_address", ipAddressEditText.text.toString())
-
         val clientIdEditText = findViewById<EditText>(R.id.client_id_edit_text)
-        editor.putString("client_id", clientIdEditText.text.toString())
-
         val usernameEditText = findViewById<EditText>(R.id.username_edit_text)
-        editor.putString("username", usernameEditText.text.toString())
-
         val passwordEditText = findViewById<EditText>(R.id.password_edit_text)
-        editor.putString("password", passwordEditText.text.toString())
-
         val lastWillTopicEditText = findViewById<EditText>(R.id.last_will_topic_edit_text)
-        editor.putString("last_will_topic", lastWillTopicEditText.text.toString())
-
         val lastWillPayloadEditText = findViewById<EditText>(R.id.last_will_message_edit_text)
-        editor.putString("last_will_payload", lastWillPayloadEditText.text.toString())
-
         val minHumidityEditText = findViewById<EditText>(R.id.min_humidity_edit_text)
-        editor.putString("min_humidity", minHumidityEditText.text.toString())
-
         val maxHumidityEditText = findViewById<EditText>(R.id.max_humidity_edit_text)
-        editor.putString("max_humidity", maxHumidityEditText.text.toString())
-
         val spinner = findViewById<Spinner>(R.id.spinner)
-        editor.putString("plant_type", spinner.selectedItem.toString())
 
-        editor.apply()
+        // Get the selected plant type
+        val plantType = PlantDataUtil.plantTypes[spinner.selectedItemPosition].name
 
-        Toast.makeText(this, "Settings saved", Toast.LENGTH_SHORT).show()
+        if(location == null) {
+            Toast.makeText(this, "Por favor aguarde ser localizado", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val system = "${title.text}|$location|${ipAddressEditText.text}|${clientIdEditText.text}|${usernameEditText.text}|${passwordEditText.text}|${lastWillTopicEditText.text}|${lastWillPayloadEditText.text}|${minHumidityEditText.text}|${maxHumidityEditText.text}|$plantType"
+
+        LocalStorage.addPlant(this, system)
+
+        Toast.makeText(this, "Sistema adicionado com sucesso", Toast.LENGTH_SHORT).show()
         finish()
+
+    }
+
+    /**
+     * Get the location of the device.
+     */
+    private fun getLocation() {
+        locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
+        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), locationPermissionCode)
+            return
+        }
+        // If location permission is already granted, request location updates
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            locationManager.requestLocationUpdates(LocationManager.FUSED_PROVIDER, 500, 0f, this)
+        }
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 500, 0f, this)
+    }
+
+    /**
+     * Called when the location has changed.
+     * @param location The new location.
+     */
+    override fun onLocationChanged(location: Location) {
+        this.location = location.latitude.toString() + "," + location.longitude.toString()
     }
 }

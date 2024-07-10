@@ -7,7 +7,7 @@
     android:background="#0C1920"
     android:orientation="vertical"
     android:layout_height="match_parent"
-    tools:context=".Home">
+    tools:context=".userinterface.Home">
 
     <FrameLayout
         android:id="@+id/loadingLayout"

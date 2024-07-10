@@ -1,19 +1,18 @@
-package com.example.dripdropdigital
+package com.example.dripdropdigital.backend
 
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.view.animation.Animation
-import android.view.animation.ScaleAnimation
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.util.Pair
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import com.example.dripdropdigital.R
+import com.example.dripdropdigital.userinterface.Home
 
+/**
+ * Display the splash screen of the application
+ */
 class SplashScreen : AppCompatActivity() {
 
     private val SPLASH_DELAY: Long = 1000 // 2 seconds
@@ -35,7 +34,7 @@ class SplashScreen : AppCompatActivity() {
             )
             startActivity(intent, options.toBundle())
             //Delay the finish of the splash screen activity for 1 second
-            Thread{
+            Thread {
                 Thread.sleep(500)
                 finish()
             }.start()

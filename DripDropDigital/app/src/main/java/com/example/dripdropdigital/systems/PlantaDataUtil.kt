@@ -1,7 +1,9 @@
-package com.example.dripdropdigital
+package com.example.dripdropdigital.systems
 
+/**
+ * This class is responsible for managing the plant data of the application
+ */
 object PlantDataUtil {
-
     val plantTypes = listOf(
         PlantType("Personalizado", 55.0, 75.0),
         PlantType("Trigo", 50.0, 75.0),

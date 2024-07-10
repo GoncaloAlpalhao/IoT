@@ -20,33 +20,33 @@
         android:theme="@style/Theme.DripDropDigital"
         tools:targetApi="31">
         <activity
-            android:name=".NewSystem"
+            android:name=".userinterface.NewSystem"
             android:exported="true" />
         <activity
-            android:name=".SystemList"
+            android:name=".userinterface.SystemList"
             android:exported="false" />
         <activity
-            android:name=".AboutActivity"
+            android:name=".userinterface.AboutActivity"
             android:exported="false" />
         <activity
-            android:name=".TutorialActivity"
+            android:name=".userinterface.TutorialActivity"
             android:exported="false" />
         <activity
-            android:name=".MainDashboard"
+            android:name=".userinterface.MainDashboard"
             android:exported="false" />
         <activity
-            android:name=".Home"
+            android:name=".userinterface.Home"
             android:exported="false" />
         <activity
-            android:name=".SettingsActivity"
+            android:name=".userinterface.SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings" />
         <activity
-            android:name=".MainActivity"
+            android:name=".template.MainActivity"
             android:exported="false" />
 
         <activity
-            android:name=".SplashScreen"
+            android:name=".backend.SplashScreen"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

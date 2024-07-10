@@ -1,4 +1,4 @@
-package com.example.dripdropdigital
+package com.example.dripdropdigital.userinterface
 
 import android.content.Intent
 import android.os.Bundle
@@ -10,9 +10,16 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.example.dripdropdigital.backend.LocalStorage
+import com.example.dripdropdigital.R
+import com.example.dripdropdigital.systems.SystemItem
+import com.example.dripdropdigital.systems.SystemListAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
+/**
+ * Displays the list of systems
+ */
 class SystemList : AppCompatActivity() {
 
     // Declare the floating action button
@@ -50,6 +57,9 @@ class SystemList : AppCompatActivity() {
 
     }
 
+    /**
+     * This function is responsible for displaying the list of systems in the system list page
+     */
     private fun listSystems() {
         val localSystems = LocalStorage.getPlants(this)
 
@@ -89,6 +99,9 @@ class SystemList : AppCompatActivity() {
 
     }
 
+    /**
+     * This function is responsible for displaying a confirmation dialog before deleting all systems
+     */
     private fun onDeleteConfirmation(){
         val builder = MaterialAlertDialogBuilder(this)
         builder.setTitle("Apagar todos os sistemas")
@@ -101,6 +114,9 @@ class SystemList : AppCompatActivity() {
         builder.show()
     }
 
+    /**
+     * This function is called when the activity is resumed
+     */
     override fun onResume() {
         super.onResume()
         listSystems()
