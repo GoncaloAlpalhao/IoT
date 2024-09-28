@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt">
+	<head>
+		<style>
+			body{
+			background-color: #0C1920;
+			color: #FFFFEE;
+			text-align: center;
+			}
+
+			h1{
+			font-family: 'Trebuchet MS'. 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+			padding: 2px;
+			}
+
+			p{
+			size: 20px;
+			font-family: 'Trebuchet MS'. 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+			}
+
+			a{
+			display: block;
+			color: #FFE4C4;
+			size: 15px;
+			}
+		</style>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>DripDropDigital</title>
+	</head>
+	<body>
+		<img src="{{ url_for('static', filename='images/dripdropdigital.png') }}" width="300px"/>
+		<h1>Conecta-te agora!</h1>
+		<form action="/configurar-rede" method="post">
+			<label for="ssid">SSID/Nome da Rede:</label><br>
+			<input type="text" id="ssid" name="ssid"><br>
+			
+			<label for="senha">Senha da Rede:</label><br>
+			<input type="password" id="senha" name="senha"><br><br>
+			
+			<label for="planta">ID da Planta:</label><br>
+			<input type="number" id="planta" name="planta"><br><br>
+			
+			<label for="tipo">Tipo da Planta:</label><br>
+			<select type="tipo" id="tipo" name="tipo">
+				<option value="Milho">Milho</option>
+				<option value="Trigo">Trigo</option>
+				<option value="Arroz">Arroz</option>
+				<option value="Batata">Batata</option>
+				<option value="Tomate">Tomate</option>
+				<option value="Algodão">Algodão</option>
+			</select><br><br>
+			
+			<input type="submit" value="Configurar Rede">
+		</form>
+	</body>
+</html>

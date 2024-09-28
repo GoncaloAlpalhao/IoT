@@ -5,6 +5,8 @@ import time
 import network
 from umqtt.simple import MQTTClient
 from dht20 import DHT20
+import urequests
+
 
 #LED
 #Definir o pino do LED
@@ -32,15 +34,37 @@ if wlan is None:
     while True:
         pass  #No trespassing :D
 #Imprimir o IP
-print(wlan.ifconfig()[0])                  
+print(wlan.ifconfig()[0])
+
+# Get the MAC address
+mac_address = wlan.config('mac')
+mac_address_str = ':'.join(['{:02x}'.format(b) for b in mac_address])
+print("MAC Address:", mac_address_str)
+
+# Send MAC address to API
+url = "https://dripdrop.danielgraca.com/PHP-API/devices"
+device = {
+    "id": mac_address_str.replace(" ", ""),
+    "fk_user": None,
+    "fk_plant": None
+}
+
+try:
+    response = urequests.post("https://dripdrop.danielgraca.com/PHP-API/devices", json=device)
+    print("Response status:", response.status_code)
+    print("Response content:", response.text)
+    response.close()
+except Exception as e:
+    print("Failed to send MAC address:", e)
 
 #MQTT
-mqtt_server = "192.168.1.144"    #IP do broker MQTT
+mqtt_server = "193.137.5.80"    #IP do broker MQTT
 client_id = "testmqtt3428709"     #ID do cliente MQTT
-topic_pub = "temperatura"         #Topico onde vai ser publicada a mensagem Last Will
-topic_sub = "LED"                 #Topico onde o raspberry vai subscrever
+topic_pub = f"{mac_address_str}/temperatura"         #Topico onde vai ser publicada a mensagem Last Will
+topic_sub = f"{mac_address_str}/LED"                 #Topico onde o raspberry vai subscrever
 is_Raining = False                #Variável para indicar se está a chover ou não
 manual = False                    #Variável para indicar se o sistema está em modo manual ou não
+
 
 #Função de subscrição
 def sub_cb(topic, msg):
@@ -50,10 +74,10 @@ def sub_cb(topic, msg):
     print("New message on topic {}".format(topic.decode('utf-8')), ": ", msg)
     #Se a mensagem for "on" ou "off", o LED liga ou desliga para simular o sistema de rega
     if msg == "on" and manual == True:
-        client.publish("sistemaRega", msg, retain=True)
+        client.publish(f"{mac_address_str}/sistemaRega", msg, retain=True)
         LED.on()
     elif msg == "off" and manual == True:
-        client.publish("sistemaRega", msg, retain=True)
+        client.publish(f"{mac_address_str}/sistemaRega", msg, retain=True)
         LED.off()
     #Se a mensagem for "rain" ou "norain", a variável is_Raining é atualizada para simular o Rule Engine
     elif msg == "rain" and manual == False:
@@ -63,20 +87,21 @@ def sub_cb(topic, msg):
     #Se a mensagem for "manual" ou "automatic", a variável manual é atualizada para simular o Rule Engine
     elif msg == "manual":
         manual = True
-        client.publish("manMode", "manual", retain=True)
+        client.publish(f"{mac_address_str}/manMode", "manual", retain=True)
     elif msg == "automatic":
         manual = False
-        client.publish("manMode", "automatico", retain=True)
+        client.publish(f"{mac_address_str}/manMode", "automatico", retain=True)
     #Se a mensagem não for "on" ou "off", o LED pisca 5 vezes para indicar que a mensagem não foi reconhecida
     else:
         blink(5,0.1)
 
 #Função de conexão ao broker MQTT
 def mqtt_connect():
-    client = MQTTClient(client_id, mqtt_server, user="goncalo", password="123456", keepalive=60)
+    client = MQTTClient(client_id, mqtt_server, port=8080, keepalive=60)
     client.set_callback(sub_cb)                                                                       
     client.set_last_will(topic_pub, "Mission Failed, Raspberry down!", retain=False, qos=0)
-    client.connect(clean_session=False)
+    #client.connect(clean_session=False)
+    client.connect()
     print("Connected to %s MQTT broker" % (mqtt_server))
     #Piscar o LED para indicar ao cliente que está conectado
     blink(2,0.25)
@@ -117,19 +142,19 @@ def messagePublisher():
     time.sleep(0.2)
     #Publicar a humidade do solo
     moisturePub = str(moisture)[:5]
-    client.publish("humidadeSolo", moisturePub, retain=True)
+    client.publish(f"{mac_address_str}/humidadeSolo", moisturePub, retain=True)
     time.sleep(0.2)
     #Publicar a temperatura
     tempPub = str(measurements['t'])[:5]
-    client.publish("temperatura", tempPub, retain=True)
+    client.publish(f"{mac_address_str}/temperatura", tempPub, retain=True)
     time.sleep(0.2)
     #Publicar a humidade do ar
     humidadeArPub = str(measurements['rh'])[:5]
-    client.publish("humidadeAr", humidadeArPub, retain=True)
+    client.publish(f"{mac_address_str}/humidadeAr", humidadeArPub, retain=True)
     time.sleep(0.2)
     #Publicar a temperatura do cpu
     tempCpuPub = str(tempCelsius)[:5]
-    client.publish("temperaturaCpu", tempCpuPub, retain=True)
+    client.publish(f"{mac_address_str}/temperaturaCpu", tempCpuPub, retain=True)
     time.sleep(0.2)
     #Check ao sistema de rega
     rainCheck(moisturePub)
@@ -143,13 +168,13 @@ def rainCheck(soil_moisture):
         return
     if soil_moisture < 50 and is_Raining == False:
         LED.on()
-        client.publish("sistemaRega", "on", retain=True)
+        client.publish(f"{mac_address_str}/sistemaRega", "on", retain=True)
     elif soil_moisture < 20 and is_Raining == True:
         LED.on()
-        client.publish("sistemaRega", "on", retain=True)
+        client.publish(f"{mac_address_str}/sistemaRega", "on", retain=True)
     else:
         LED.off()
-        client.publish("sistemaRega", "off", retain=True)
+        client.publish(f"{mac_address_str}/sistemaRega", "off", retain=True)
 
 #Main (permite a subscrição e publicação em simultâneo)
 try:
@@ -165,4 +190,3 @@ while True:
         time.sleep(1)
     except OSError as e:
         reconnect()
-
